@@ -1,0 +1,8 @@
+{
+  "[go]": {
+    "editor.formatOnSave": true
+  },
+  "gopls": {
+    "formatting.gofumpt": true
+  }
+}

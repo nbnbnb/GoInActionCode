@@ -5,12 +5,16 @@ import (
 	"log"
 	"os"
 
+	// 导入前面的 _ 表示
+	// 让 Go 语言对包做初始化操作，但是并不使用包里的标识符
+	// 只调用包里面的 init 函数
 	_ "GoInActionCode/chapter2/sample/matchers"
 )
 
 // init is called prior to main.
 func init() {
 	// Change the device for logging to stdout.
+	// 从默认的标准错误（ stderr），设置为标准输出（ stdout）设备
 	log.SetOutput(os.Stdout)
 }
 

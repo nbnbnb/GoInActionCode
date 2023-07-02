@@ -22,12 +22,12 @@ func RetrieveFeeds() ([]*Feed, error) {
 		return nil, err
 	}
 
-	// Schedule the file to be closed once
-	// the function returns.
+	// Schedule the file to be closed once the function returns.
+	// 关键字 defer 会安排随后的函数调用在函数返回时才执行
 	defer file.Close()
 
-	// Decode the file into a slice of pointers
-	// to Feed values.
+	// Decode the file into a slice of pointers to Feed values.
+	// 切片的每一项是一个指向一个 Feed 类型值的指针
 	var feeds []*Feed
 	err = json.NewDecoder(file).Decode(&feeds)
 

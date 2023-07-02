@@ -4,5 +4,7 @@
   },
   "gopls": {
     "formatting.gofumpt": true
-  }
+  },
+  "editor.fontSize": 16,
+  "editor.formatOnSave": true
 }

@@ -4,9 +4,8 @@
 package main
 
 import (
+	"GoInActionCode/chapter7/patterns/search"
 	"log"
-
-	"github.com/goinaction/code/chapter7/patterns/search"
 )
 
 // main is the entry point for all Go programs.

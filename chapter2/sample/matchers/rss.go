@@ -1,14 +1,13 @@
 package matchers
 
 import (
+	"GoInActionCode/chapter2/sample/search"
 	"encoding/xml"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"regexp"
-
-	"github.com/goinaction/code/chapter2/sample/search"
 )
 
 type (

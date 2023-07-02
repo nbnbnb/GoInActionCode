@@ -3,11 +3,10 @@
 package main
 
 import (
+	"GoInActionCode/chapter7/patterns/work"
 	"log"
 	"sync"
 	"time"
-
-	"github.com/goinaction/code/chapter7/patterns/work"
 )
 
 // names provides a set of names to display.

@@ -3,7 +3,7 @@
 package main
 
 import (
-	"github.com/goinaction/code/chapter10/listing06/pubsub"
+	"GoInActionCode/chapter10/listing06/pubsub"
 )
 
 // publisher is an interface to allow this package to mock the
@@ -19,20 +19,17 @@ type mock struct{}
 
 // Publish implements the publisher interface for the mock.
 func (m *mock) Publish(key string, v interface{}) error {
-
 	// ADD YOUR MOCK FOR THE PUBLISH CALL.
 	return nil
 }
 
 // Subscribe implements the publisher interface for the mock.
 func (m *mock) Subscribe(key string) error {
-
 	// ADD YOUR MOCK FOR THE SUBSCRIBE CALL.
 	return nil
 }
 
 func main() {
-
 	// Create a slice of publisher interface values. Assign
 	// the address of a pubsub.PubSub value and the address of
 	// a mock value.

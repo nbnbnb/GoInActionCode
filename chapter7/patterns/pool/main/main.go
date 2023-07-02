@@ -3,14 +3,13 @@
 package main
 
 import (
+	"GoInActionCode/chapter7/patterns/pool"
 	"io"
 	"log"
 	"math/rand"
 	"sync"
 	"sync/atomic"
 	"time"
-
-	"github.com/goinaction/code/chapter7/patterns/pool"
 )
 
 const (

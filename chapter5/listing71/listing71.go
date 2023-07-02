@@ -3,9 +3,8 @@
 package main
 
 import (
+	"GoInActionCode/chapter5/listing71/entities"
 	"fmt"
-
-	"github.com/goinaction/code/chapter5/listing71/entities"
 )
 
 // main is the entry point for the application.

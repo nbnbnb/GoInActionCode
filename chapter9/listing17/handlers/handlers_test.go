@@ -3,16 +3,17 @@
 package handlers_test
 
 import (
+	"GoInActionCode/chapter9/listing17/handlers"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/goinaction/code/chapter9/listing17/handlers"
 )
 
-const checkMark = "\u2713"
-const ballotX = "\u2717"
+const (
+	checkMark = "\u2713"
+	ballotX   = "\u2717"
+)
 
 func init() {
 	handlers.Routes()

@@ -46,7 +46,6 @@ func (bike) Unlock() {
 // =============================================================================
 
 func main() {
-
 	// Declare variables of the MoveLocker and Mover interfaces set to their
 	// zero value.
 	var ml MoveLocker
@@ -62,7 +61,7 @@ func main() {
 
 	// prog.go:65: cannot use m (type Mover) as type MoveLocker in assignment:
 	//	   Mover does not implement MoveLocker (missing Lock method)
-	ml = m
+	// ml = m
 
 	// Interface type Mover does not declare methods named lock and unlock.
 	// Therefore, the compiler can't perform an implicit conversion to assign

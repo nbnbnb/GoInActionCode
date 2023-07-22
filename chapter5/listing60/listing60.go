@@ -1,48 +1,39 @@
-// Sample program to show what happens when the outer and inner
-// type implement the same interface.
+// 这个示例程序展示当内部类型和外部类型要实现同一个接口时的做法
 package main
 
 import (
 	"fmt"
 )
 
-// notifier is an interface that defined notification
-// type behavior.
 type notifier interface {
 	notify()
 }
 
-// user defines a user in the program.
 type user struct {
 	name  string
 	email string
 }
 
-// notify implements a method that can be called via
-// a value of type user.
+// 通过 user 类型值的指针调用的方法
 func (u *user) notify() {
 	fmt.Printf("Sending user email to %s<%s>\n",
 		u.name,
 		u.email)
 }
 
-// admin represents an admin user with privileges.
 type admin struct {
 	user
 	level string
 }
 
-// notify implements a method that can be called via
-// a value of type Admin.
+// 通过 admin 类型值的指针调用的方法
 func (a *admin) notify() {
 	fmt.Printf("Sending admin email to %s<%s>\n",
 		a.name,
 		a.email)
 }
 
-// main is the entry point for the application.
 func main() {
-	// Create an admin user.
 	ad := admin{
 		user: user{
 			name:  "john smith",
@@ -51,20 +42,18 @@ func main() {
 		level: "super",
 	}
 
-	// Send the admin user a notification.
-	// The embedded inner type's implementation of the
-	// interface is NOT "promoted" to the outer type.
+	// 这表明，如果外部类型实现了 notify 方法，内部类型的实现就不会被提升
+
+	// 给 admin 用户发送一个通知接口的嵌入的内部类型实现并 "没有" 提升到外部类型
 	sendNotification(&ad)
 
-	// We can access the inner type's method directly.
+	// 我们可以直接访问内部类型的方法
 	ad.user.notify()
 
-	// The inner type's method is NOT promoted.
+	// 内部类型的方法 "没有" 被提升
 	ad.notify()
 }
 
-// sendNotification accepts values that implement the notifier
-// interface and sends notifications.
 func sendNotification(n notifier) {
 	n.notify()
 }

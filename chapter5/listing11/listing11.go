@@ -1,48 +1,46 @@
-// Sample program to show how to declare methods and how the Go
-// compiler supports them.
+// 这个示例程序展示如何声明并使用方法
 package main
 
 import (
 	"fmt"
 )
 
-// user defines a user in the program.
+// 定义一个 user 用户类型
 type user struct {
 	name  string
 	email string
 }
 
-// notify implements a method with a value receiver.
+// notify 方法 “值接收者” 是 user
 func (u user) notify() {
-	fmt.Printf("Sending User Email To %s<%s>\n",
-		u.name,
-		u.email)
+	fmt.Printf("Sending User Email To %s<%s>\n", u.name, u.email)
 }
 
-// changeEmail implements a method with a pointer receiver.
+// changeEmail 方法的 “指针接收者” 是 *user
 func (u *user) changeEmail(email string) {
 	u.email = email
 }
 
-// main is the entry point for the application.
+// main 是应用程序的入口
 func main() {
-	// Values of type user can be used to call methods
-	// declared with a value receiver.
-	bill := user{"Bill", "bill@email.com"}
-	bill.notify()
+	// 值类型
+	value_type := user{"Bill", "bill@email.com"}
 
-	// Pointers of type user can also be used to call methods
-	// declared with a value receiver.
-	lisa := &user{"Lisa", "lisa@email.com"}
-	lisa.notify()
+	// 指针类型
+	pointer_type := &user{"Lisa", "lisa@email.com"}
 
-	// Values of type user can be used to call methods
-	// declared with a pointer receiver.
-	bill.changeEmail("bill@newdomain.com")
-	bill.notify()
+	// 值类型 -> 值接收者
+	// notify 方法，收到 value_type 值的一个副本
+	value_type.notify()
 
-	// Pointers of type user can be used to call methods
-	// declared with a pointer receiver.
-	lisa.changeEmail("lisa@newdomain.com")
-	lisa.notify()
+	// 指针类型 -> 值接收者
+	// notify 方法，收到的是 pointer_type（指针）值的一个副本
+	pointer_type.notify()
+
+	// 值类型 -> 指针接收者
+	// Go 编译器实际值的是 (&value_type).changeEmail("bill@newdomain")
+	value_type.changeEmail("bill@newdomain.com")
+
+	// 指针类型 -> 指针接收者
+	pointer_type.changeEmail("lisa@newdomain.com")
 }

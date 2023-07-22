@@ -1,5 +1,4 @@
-// Sample program to show how to write a simple version of curl using
-// the io.Reader and io.Writer interface support.
+// 这个示例程序展示如何使用 io.Reader 和 io.Writer 接口写一个简单版本的 curl 程序
 package main
 
 import (
@@ -9,25 +8,27 @@ import (
 	"os"
 )
 
-// init is called before main.
+// init 在 main 函数之前调用
 func init() {
 	if len(os.Args) != 2 {
-		fmt.Println("Usage: ./example2 <url>")
-		os.Exit(-1)
+		// fmt.Println("Usage: ./example2 <url>")
+		// os.Exit(-1)
+		os.Args = append(os.Args, "http://www.baidu.com")
 	}
 }
 
-// main is the entry point for the application.
+// main 是应用程序的入口
 func main() {
-	// Get a response from the web server.
+	// 从 Web 服务器获取数据
 	r, err := http.Get(os.Args[1])
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	// Copies from the Body to Stdout.
+	// 从 Body 复制到 Stdout
 	io.Copy(os.Stdout, r.Body)
+
 	if err := r.Body.Close(); err != nil {
 		fmt.Println(err)
 	}

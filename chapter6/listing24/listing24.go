@@ -1,6 +1,4 @@
-// This sample program demonstrates how to use a buffered
-// channel to work on multiple tasks with a predefined number
-// of goroutines.
+// 这个示例程序展示如何使用有缓冲的通道和固定数目的 goroutine 来处理一堆工作
 package main
 
 import (
@@ -11,67 +9,72 @@ import (
 )
 
 const (
-	numberGoroutines = 4  // Number of goroutines to use.
-	taskLoad         = 10 // Amount of work to process.
+	// 要使用的 goroutine 的数量
+	numberGoroutines = 4
+	// 要处理的工作的数量
+	taskLoad = 10
 )
 
-// wg is used to wait for the program to finish.
+// wg 用来等待程序完成
 var wg sync.WaitGroup
 
-// init is called to initialize the package by the
-// Go runtime prior to any other code being executed.
+// init 初始化包
+// Go 语言运行时会在其他代码执行之前优先执行这个函数
 func init() {
-	// Seed the random number generator.
+	// 初始化随机数种子
 	rand.Seed(time.Now().Unix())
 }
 
-// main is the entry point for all Go programs.
 func main() {
-	// Create a buffered channel to manage the task load.
+	// 创建一个有缓冲的通道来管理工作
 	tasks := make(chan string, taskLoad)
 
-	// Launch goroutines to handle the work.
+	// 启动 goroutine 来处理工作
 	wg.Add(numberGoroutines)
 	for gr := 1; gr <= numberGoroutines; gr++ {
+		// 启动 goroutine
 		go worker(tasks, gr)
 	}
 
-	// Add a bunch of work to get done.
+	// 增加一组要完成的工作
 	for post := 1; post <= taskLoad; post++ {
+		// 向通道中写入数据
 		tasks <- fmt.Sprintf("Task : %d", post)
 	}
 
-	// Close the channel so the goroutines will quit
-	// when all the work is done.
+	// 当所有工作都处理完时关闭通道以便所有 goroutine 退出
+	// 当通道关闭后， goroutine 依旧可以从通道接收数据，但是不能再向通道里发送数据
+	// 从一个已经关闭且没有数据的通道里获取数据，总会立刻返回，并返回一个通道类型的零值
 	close(tasks)
 
-	// Wait for all the work to get done.
+	// 等待所有工作完成
 	wg.Wait()
 }
 
-// worker is launched as a goroutine to process work from
-// the buffered channel.
+// worker 作为 goroutine 启动来处理从有缓冲的通道传入的工作
 func worker(tasks chan string, worker int) {
-	// Report that we just returned.
 	defer wg.Done()
 
 	for {
-		// Wait for work to be assigned.
+		// 等待分配工作
+		// 从通道中获取数据（每个 goroutine 都会在这个位置阻塞，等待从通道中接收数据）
 		task, ok := <-tasks
+		// 从一个已经关闭且没有数据的通道里获取数据，总会立刻返回，并返回一个通道类型的零值
+		// 所以，如果 ok 的值为 false，表示通道已经关闭
 		if !ok {
-			// This means the channel is empty and closed.
+			// 这意味着通道已经空了，并且已被关闭
 			fmt.Printf("Worker: %d : Shutting Down\n", worker)
 			return
 		}
 
-		// Display we are starting the work.
+		// 显示我们开始工作了
 		fmt.Printf("Worker: %d : Started %s\n", worker, task)
 
-		// Randomly wait to simulate work time.
+		// 随机等一段时间来模拟工作
 		sleep := rand.Int63n(100)
 		time.Sleep(time.Duration(sleep) * time.Millisecond)
 
-		// Display we finished the work.
+		// 显示我们完成了工作
 		fmt.Printf("Worker: %d : Completed %s\n", worker, task)
 	}
 }

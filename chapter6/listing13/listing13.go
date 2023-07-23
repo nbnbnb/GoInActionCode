@@ -1,5 +1,4 @@
-// This sample program demonstrates how to use the atomic
-// package to provide safe access to numeric types.
+// 这个示例程序展示如何使用 atomic 包来提供对数值类型的安全访问
 package main
 
 import (
@@ -10,39 +9,39 @@ import (
 )
 
 var (
-	// counter is a variable incremented by all goroutines.
+	// counter 是所有 goroutine 都要增加其值的变量
 	counter int64
 
-	// wg is used to wait for the program to finish.
+	// wg 用来等待程序结束
 	wg sync.WaitGroup
 )
 
-// main is the entry point for all Go programs.
 func main() {
-	// Add a count of two, one for each goroutine.
+	// 计数加 2，表示要等待两个 goroutine
 	wg.Add(2)
 
-	// Create two goroutines.
+	// 创建 2 个 goroutine
 	go incCounter(1)
 	go incCounter(2)
 
-	// Wait for the goroutines to finish.
+	// 等待 goroutine 结束
 	wg.Wait()
 
-	// Display the final value.
+	// 显示最终的值
 	fmt.Println("Final Counter:", counter)
 }
 
-// incCounter increments the package level counter variable.
+// incCounter 增加包里 counter 变量的值
 func incCounter(id int) {
-	// Schedule the call to Done to tell main we are done.
+	// 在函数退出时调用 Done 来通知 main 函数工作已经完成
 	defer wg.Done()
 
-	for count := 0; count < 2; count++ {
-		// Safely Add One To Counter.
+	for count := 0; count < 1000; count++ {
+		// 使用 atomic 包来安全地增加 counter 的值
+		// 安全地对 counter 加 1
 		atomic.AddInt64(&counter, 1)
 
-		// Yield the thread and be placed back in queue.
+		// 当前 goroutine 从线程退出，并放回到队列
 		runtime.Gosched()
 	}
 }

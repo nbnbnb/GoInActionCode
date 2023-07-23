@@ -1,6 +1,4 @@
-// This sample program demonstrates how to use a mutex
-// to define critical sections of code that need synchronous
-// access.
+// 这个示例程序展示如何使用互斥锁来定义一段需要同步访问的代码临界区资源的同步访问
 package main
 
 import (
@@ -10,55 +8,53 @@ import (
 )
 
 var (
-	// counter is a variable incremented by all goroutines.
+	// counter 是所有 goroutine 都要增加其值的变量
 	counter int
 
-	// wg is used to wait for the program to finish.
+	// wg 用来等待程序结束
 	wg sync.WaitGroup
 
-	// mutex is used to define a critical section of code.
+	// mutex 用来定义一段代码临界区
 	mutex sync.Mutex
 )
 
-// main is the entry point for all Go programs.
 func main() {
-	// Add a count of two, one for each goroutine.
+	// 计数加 2，表示要等待两个 goroutine
 	wg.Add(2)
 
-	// Create two goroutines.
+	// 创建 2 个 goroutine
 	go incCounter(1)
 	go incCounter(2)
 
-	// Wait for the goroutines to finish.
+	// 等待 goroutine 结束
 	wg.Wait()
 	fmt.Printf("Final Counter: %d\n", counter)
 }
 
-// incCounter increments the package level Counter variable
-// using the Mutex to synchronize and provide safe access.
+// incCounter 使用互斥锁来同步并保证安全访问，增加包里 counter 变量的值
 func incCounter(id int) {
-	// Schedule the call to Done to tell main we are done.
+	// 在函数退出时调用 Done 来通知 main 函数工作已经完成
 	defer wg.Done()
 
-	for count := 0; count < 2; count++ {
-		// Only allow one goroutine through this
-		// critical section at a time.
+	for count := 0; count < 1000; count++ {
+
+		// 同一时刻只允许一个 goroutine 进入这个临界区
 		mutex.Lock()
 		{
-			// Capture the value of counter.
+			// 捕获 counter 的值
 			value := counter
 
-			// Yield the thread and be placed back in queue.
+			// 当前 goroutine 从线程退出，并放回到队列
 			runtime.Gosched()
 
-			// Increment our local value of counter.
+			// 增加本地 value 变量的值
 			value++
 
-			// Store the value back into counter.
+			// 将该值保存回 counter
 			counter = value
 		}
+
+		// 释放锁，允许其他正在等待的 goroutine 进入临界区
 		mutex.Unlock()
-		// Release the lock and allow any
-		// waiting goroutine through.
 	}
 }

@@ -1,5 +1,4 @@
-// Example is provided with help by Gabriel Aszalos.
-// Package runner manages the running and lifetime of a process.
+// runner 包管理处理任务的运行和生命周期
 package runner
 
 import (
@@ -9,91 +8,99 @@ import (
 	"time"
 )
 
-// Runner runs a set of tasks within a given timeout and can be
-// shut down on an operating system interrupt.
+// Runner 在给定的超时时间内执行一组任务，并且在操作系统发送中断信号时结束这些任务
 type Runner struct {
-	// interrupt channel reports a signal from the
-	// operating system.
+	// interrupt 通道报告从操作系统发送的信号
 	interrupt chan os.Signal
 
-	// complete channel reports that processing is done.
+	// complete 通道报告处理任务已经完成
 	complete chan error
 
-	// timeout reports that time has run out.
+	// timeout 通道报告处理任务已经超时
 	timeout <-chan time.Time
 
-	// tasks holds a set of functions that are executed
-	// synchronously in index order.
+	// tasks 持有一组以索引顺序依次执行的函数
 	tasks []func(int)
 }
 
-// ErrTimeout is returned when a value is received on the timeout channel.
+// ErrTimeout 会在任务执行超时时返回
 var ErrTimeout = errors.New("received timeout")
 
-// ErrInterrupt is returned when an event from the OS is received.
+// ErrInterrupt 会在接收到操作系统的事件时返回
 var ErrInterrupt = errors.New("received interrupt")
 
-// New returns a new ready-to-use Runner.
+// New 返回一个新的准备使用的 Runner
 func New(d time.Duration) *Runner {
 	return &Runner{
 		interrupt: make(chan os.Signal, 1),
 		complete:  make(chan error),
-		timeout:   time.After(d),
+		// After 函数返回一个 time.Time 类型的通道
+		// 语言运行时会在指定的 duration 时间到期之后，向这个通道发送一个 time.Time 的值
+		timeout: time.After(d),
+		// 因为 task 字段的零值是 nil，已经满足初始化的要求，所以没有被明确初始化
 	}
 }
 
-// Add attaches tasks to the Runner. A task is a function that
-// takes an int ID.
+// Add 将一个任务附加到 Runner 上
+// 可变参数
+// 这个任务是一个接收一个 int 类型的 ID 作为参数的函数
 func (r *Runner) Add(tasks ...func(int)) {
 	r.tasks = append(r.tasks, tasks...)
 }
 
-// Start runs all tasks and monitors channel events.
+// Start 执行所有任务，并监视通道事件
 func (r *Runner) Start() error {
-	// We want to receive all interrupt based signals.
+	// 我们希望接收所有中断信号
 	signal.Notify(r.interrupt, os.Interrupt)
 
-	// Run the different tasks on a different goroutine.
+	// 用不同的 goroutine 执行不同的任务
 	go func() {
+		// 方法返回的 error 接口值发送到 complete 通道
 		r.complete <- r.run()
 	}()
 
 	select {
-	// Signaled when processing is done.
+	// 当任务处理完成时发出的信号
+	// 从 complete 通道获取数据
 	case err := <-r.complete:
 		return err
 
-	// Signaled when we run out of time.
+	// 当任务处理程序运行超时时发出的信号
+	// 从 timeout 通道获取数据
 	case <-r.timeout:
 		return ErrTimeout
 	}
 }
 
-// run executes each registered task.
+// run 执行每一个已注册的任务
 func (r *Runner) run() error {
 	for id, task := range r.tasks {
-		// Check for an interrupt signal from the OS.
+		// 检测操作系统的中断信号
 		if r.gotInterrupt() {
 			return ErrInterrupt
 		}
 
-		// Execute the registered task.
+		// 执行已注册的任务
 		task(id)
 	}
 
 	return nil
 }
 
-// gotInterrupt verifies if the interrupt signal has been issued.
+// gotInterrupt 验证是否接收到了中断信号
 func (r *Runner) gotInterrupt() bool {
+	// 一般来说， select 语句在没有任何要接收的数据时会阻塞，不过有了 default 分支就不会阻塞了
+	// default 分支会将接收 interrupt 通道的阻塞调用转变为非阻塞的
+
 	select {
-	// Signaled when an interrupt event is sent.
+	// 当中断事件被触发时发出的信号
+	// 从 interrupt 通道获取数据
 	case <-r.interrupt:
-		// Stop receiving any further signals.
+		// 停止接收后续的任何信号
 		signal.Stop(r.interrupt)
 		return true
 
-	// Continue running as normal.
+	// 继续正常运行
 	default:
 		return false
 	}

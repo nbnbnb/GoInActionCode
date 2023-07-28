@@ -16,14 +16,14 @@ type user struct {
 	email string
 }
 
-// 如果使用 “指针接收者” 来实现一个接口，那么只有指向那个类型的指针才能够实现对应的接口
-// 如果使用 “值接收者“ 来实现一个接口，那么那个类型的值和指针都能够实现对应的接口
+// 如果使用 “指针接收者” 来实现一个接口，那么只有指向那个类型的指针才能当作参数传递
+// 如果使用 “值接收者“ 来实现一个接口，那么那个类型的值和指针都能够当作参数传递
+
+// 原因：不是所有的类型都可以获得一个指针地址，例如常量和一些临时结果值
 
 // 此次使用的是 “指针接收者” 来实现接口
 func (u *user) notify() {
-	fmt.Printf("Sending user email to %s<%s>\n",
-		u.name,
-		u.email)
+	fmt.Printf("Sending user email to %s<%s>\n", u.name, u.email)
 }
 
 func main() {
@@ -38,6 +38,7 @@ func main() {
 }
 
 // sendNotification 接受一个实现了 notifier 接口的值，并发送通知
+// 由于 user 类型实现了 notifier 接口，但是接收者是 *user 类型，所以这里只能接收 *user 类型的值
 func sendNotification(n notifier) {
 	n.notify()
 }

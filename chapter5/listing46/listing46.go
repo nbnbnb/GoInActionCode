@@ -6,9 +6,14 @@ import "fmt"
 // duration 是一个基于 int 类型的类型
 type duration int
 
-// 使用更可读的方式格式化 duration 值
+// 指针 接收者
 func (d *duration) pretty() string {
 	return fmt.Sprintf("Duration: %d", *d)
+}
+
+// 值 接收者
+func (d duration) prettyOk() string {
+	return fmt.Sprintf("Duration: %d", d)
 }
 
 func main() {
@@ -29,5 +34,5 @@ func main() {
 	// (t T)				T and *T
 	// (t *T)				*T
 
-	println("nothing")
+	println(duration(42).prettyOk())
 }

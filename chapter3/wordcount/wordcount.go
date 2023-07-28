@@ -1,16 +1,13 @@
-// Sample program to show how to show you how to briefly work with io.
 package main
 
 import (
 	"GoInActionCode/chapter3/words"
 	"fmt"
 	"io/ioutil"
-	"os"
 )
 
-// main is the entry point for the application.
 func main() {
-	filename := os.Args[1]
+	filename := "gowords.txt"
 
 	contents, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -21,5 +18,6 @@ func main() {
 	text := string(contents)
 
 	count := words.CountWords(text)
+
 	fmt.Printf("There are %d words in your text. \n", count)
 }

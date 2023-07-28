@@ -14,6 +14,7 @@ import (
 var matchers = make(map[string]Matcher)
 
 func Run(searchTerm string) {
+	// 从配置 json 中获取数据
 	feeds, err := RetrieveFeeds()
 	if err != nil {
 		log.Fatal(err)
@@ -35,6 +36,7 @@ func Run(searchTerm string) {
 	for _, feed := range feeds {
 
 		// 获取一个匹配器用于查找
+		// type 都是 rss
 		matcher, exists := matchers[feed.Type]
 		if !exists {
 			matcher = matchers["default"]
@@ -42,33 +44,26 @@ func Run(searchTerm string) {
 
 		// 启动一个 goroutine 执行查找
 		go func(matcher Matcher, feed *Feed) {
+			// 将 channel 穿进入
 			Match(matcher, feed, searchTerm, results)
 			waitGroup.Done()
 		}(matcher, feed)
 	}
 
-	// Launch a goroutine to monitor when all the work is done.
 	// 启动一个 goroutine 来监控是否所有的工作都做完了
 	go func() {
-		// Wait for everything to be processed.
 		// 等候所有任务完成
 		waitGroup.Wait()
 
-		// Close the channel to signal to the Display
-		// function that we can exit the program.
-		// 用关闭通道的方式，通知 Display 函数
-		// 可以退出程序了
+		// 用关闭通道的方式，通知 Display 函数可以退出程序了
 		close(results)
 	}()
 
-	// Start displaying results as they are available and
-	// return after the final result is displayed.
 	// 启动函数，显示返回的结果
 	// 并且在最后一个结果显示完后返回
 	Display(results)
 }
 
-// Register is called to register a matcher for use by the program.
 // Register 调用时，会注册一个匹配器，提供给后面的程序使用
 func Register(feedType string, matcher Matcher) {
 	if _, exists := matchers[feedType]; exists {

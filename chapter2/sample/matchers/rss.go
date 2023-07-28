@@ -11,7 +11,6 @@ import (
 )
 
 type (
-	// item defines the fields associated with the item tag in the rss document.
 	// item 根据 item 字段的标签，将定义的字段与 rss 文档的字段关联起来
 	item struct {
 		XMLName     xml.Name `xml:"item"`
@@ -23,7 +22,6 @@ type (
 		GeoRssPoint string   `xml:"georss:point"`
 	}
 
-	// image defines the fields associated with the image tag in the rss document.
 	// image 根据 image 字段的标签，将定义的字段与 rss 文档的字段关联起来
 	image struct {
 		XMLName xml.Name `xml:"image"`
@@ -32,7 +30,6 @@ type (
 		Link    string   `xml:"link"`
 	}
 
-	// channel defines the fields associated with the channel tag in the rss document.
 	// channel 根据 channel 字段的标签，将定义的字段与 rss 文档的字段关联起来
 	channel struct {
 		XMLName        xml.Name `xml:"channel"`
@@ -65,8 +62,13 @@ func init() {
 	search.Register("rss", matcher)
 }
 
+// Matcher 接口定义的 Search 方法
+// 方法接收者是 rssMatcher 类型的值
+// rssMatcher 是小写的，因此它是未公开的，只能在当前包里访问
+
 // Search 在文档中查找特定的搜索项
 func (m rssMatcher) Search(feed *search.Feed, searchTerm string) ([]*search.Result, error) {
+	// 用零值初始化，保存返回的结果
 	var results []*search.Result
 
 	log.Printf("Search Feed Type[%s] Site[%s] For URI[%s]\n", feed.Type, feed.Name, feed.URI)

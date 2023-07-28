@@ -9,7 +9,7 @@ func init() {
 	Register("default", matcher)
 }
 
-// Search 实现了默认匹配器的行为
+// Search 实现了 Matcher 接口
 
 // 如果声明函数的时候带有接收者，则意味着声明了一个方法
 // 这个方法会和指定的接收者的类型绑在一起

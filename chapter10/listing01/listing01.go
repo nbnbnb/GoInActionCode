@@ -103,7 +103,6 @@ func Copy(sys *System, batch int) error {
 // =============================================================================
 
 func main() {
-
 	// Initialize the system for use.
 	sys := System{
 		Xenia:  Xenia{},

@@ -1,6 +1,10 @@
-// Sample benchmarks to test which function is better for converting
-// an integer into a string. First using the fmt.Sprintf function,
-// then the strconv.FormatInt function and then strconv.Itoa.
+// 用来检测要将整数值转为字符串，使用哪个函数会更好的基准测试示例
+// 先使用 fmt.Sprintf 函数
+// 然后使用 strconv.FormatInt 函数
+// 最后使用 strconv.Itoa
+
+// * 和单元测试文件一样，基准测试的文件名也必须以_test.go 结尾
+
 package listing05_test
 
 import (
@@ -9,20 +13,22 @@ import (
 	"testing"
 )
 
-// BenchmarkSprintf provides performance numbers for the
-// fmt.Sprintf function.
+// * 基准测试函数必须以 Benchmark 开头，接受一个指向 testing.B 类型的指针作为唯一参数
+
+// BenchmarkSprintf 对 fmt.Sprintf 函数进行基准测试
 func BenchmarkSprintf(b *testing.B) {
 	number := 10
 
+	// 初始化变量之后，使用 b.ResetTimer() 函数来重置计时器
 	b.ResetTimer()
 
+	// 使用 b.N 值
 	for i := 0; i < b.N; i++ {
 		fmt.Sprintf("%d", number)
 	}
 }
 
-// BenchmarkFormat provides performance numbers for the
-// strconv.FormatInt function.
+// BenchmarkSprintf 对 strconv.FormatInt 函数进行基准测试
 func BenchmarkFormat(b *testing.B) {
 	number := int64(10)
 
@@ -33,8 +39,7 @@ func BenchmarkFormat(b *testing.B) {
 	}
 }
 
-// BenchmarkItoa provides performance numbers for the
-// strconv.Itoa function.
+// BenchmarkSprintf 对 strconv.Itoa 函数进行基准测试
 func BenchmarkItoa(b *testing.B) {
 	number := 10
 

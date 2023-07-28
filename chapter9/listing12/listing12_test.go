@@ -1,5 +1,4 @@
-// Sample test to show how to mock an HTTP GET call internally.
-// Differs slightly from the book to show more.
+// 这个示例程序展示如何内部模仿 HTTP GET 调用
 package listing12
 
 import (
@@ -10,10 +9,12 @@ import (
 	"testing"
 )
 
-const checkMark = "\u2713"
-const ballotX = "\u2717"
+const (
+	checkMark = "\u2713"
+	ballotX   = "\u2717"
+)
 
-// feed is mocking the XML document we except to receive.
+// feed 模仿了我们期望接收的 XML 文档
 var feed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss>
 <channel>
@@ -29,7 +30,7 @@ var feed = `<?xml version="1.0" encoding="UTF-8"?>
 </channel>
 </rss>`
 
-// mockServer returns a pointer to a server to handle the get call.
+// mockServer 返回用来处理请求的服务器的指针
 func mockServer() *httptest.Server {
 	f := func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
@@ -37,11 +38,12 @@ func mockServer() *httptest.Server {
 		fmt.Fprintln(w, feed)
 	}
 
+	// 使用 httptest
 	return httptest.NewServer(http.HandlerFunc(f))
 }
 
-// TestDownload validates the http Get function can download content
-// and the content can be unmarshaled and clean.
+// TestDownload 确认 http 包的 Get 函数可以下载内容
+// 并且内容可以被正确地反序列化并关闭
 func TestDownload(t *testing.T) {
 	statusCode := http.StatusOK
 
@@ -50,47 +52,38 @@ func TestDownload(t *testing.T) {
 
 	t.Log("Given the need to test downloading content.")
 	{
-		t.Logf("\tWhen checking \"%s\" for status code \"%d\"",
-			server.URL, statusCode)
+		t.Logf("\tWhen checking \"%s\" for status code \"%d\"", server.URL, statusCode)
 		{
 			resp, err := http.Get(server.URL)
 			if err != nil {
-				t.Fatal("\t\tShould be able to make the Get call.",
-					ballotX, err)
+				t.Fatal("\t\tShould be able to make the Get call.", ballotX, err)
 			}
-			t.Log("\t\tShould be able to make the Get call.",
-				checkMark)
+			t.Log("\t\tShould be able to make the Get call.", checkMark)
 
 			defer resp.Body.Close()
 
 			if resp.StatusCode != statusCode {
-				t.Fatalf("\t\tShould receive a \"%d\" status. %v %v",
-					statusCode, ballotX, resp.StatusCode)
+				t.Fatalf("\t\tShould receive a \"%d\" status. %v %v", statusCode, ballotX, resp.StatusCode)
 			}
-			t.Logf("\t\tShould receive a \"%d\" status. %v",
-				statusCode, checkMark)
+			t.Logf("\t\tShould receive a \"%d\" status. %v", statusCode, checkMark)
 
+			// 从响应体中解码 XML 文档
 			var d Document
 			if err := xml.NewDecoder(resp.Body).Decode(&d); err != nil {
-				t.Fatal("\t\tShould be able to unmarshal the response.",
-					ballotX, err)
+				t.Fatal("\t\tShould be able to unmarshal the response.", ballotX, err)
 			}
-			t.Log("\t\tShould be able to unmarshal the response.",
-				checkMark)
+			t.Log("\t\tShould be able to unmarshal the response.", checkMark)
 
+			// 验证有一个 Item 对象
 			if len(d.Channel.Items) == 1 {
-				t.Log("\t\tShould have \"1\" item in the feed.",
-					checkMark)
+				t.Log("\t\tShould have \"1\" item in the feed.", checkMark)
 			} else {
-				t.Error("\t\tShould have \"1\" item in the feed.",
-					ballotX, len(d.Channel.Items))
+				t.Error("\t\tShould have \"1\" item in the feed.", ballotX, len(d.Channel.Items))
 			}
 		}
 	}
 }
 
-// Item defines the fields associated with the item tag in
-// the buoy RSS document.
 type Item struct {
 	XMLName     xml.Name `xml:"item"`
 	Title       string   `xml:"title"`
@@ -98,8 +91,6 @@ type Item struct {
 	Link        string   `xml:"link"`
 }
 
-// Channel defines the fields associated with the channel tag in
-// the buoy RSS document.
 type Channel struct {
 	XMLName     xml.Name `xml:"channel"`
 	Title       string   `xml:"title"`
@@ -109,7 +100,6 @@ type Channel struct {
 	Items       []Item   `xml:"item"`
 }
 
-// Document defines the fields associated with the buoy RSS document.
 type Document struct {
 	XMLName xml.Name `xml:"rss"`
 	Channel Channel  `xml:"channel"`

@@ -1,4 +1,4 @@
-// This sample code implement a simple web service.
+// 这个示例程序实现了简单的网络服务
 package main
 
 import (
@@ -7,7 +7,6 @@ import (
 	"net/http"
 )
 
-// main is the entry point for the application.
 func main() {
 	handlers.Routes()
 

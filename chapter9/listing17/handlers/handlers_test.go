@@ -1,5 +1,8 @@
-// Sample test to show how to test the execution of an
-// internal endpoint.
+// 次包的名字也使用 _test 结尾
+// 如果包使用这种方式命名，测试代码只能访问包里公开的标识符
+// 即便测试代码文件和被测试的代码放在同一个文件夹中，也只能访问公开的标识符
+
+// 这个示例程序展示如何测试内部服务端点的执行效果
 package handlers_test
 
 import (
@@ -15,24 +18,30 @@ const (
 	ballotX   = "\u2717"
 )
 
+// 为服务端点初始化路由
 func init() {
 	handlers.Routes()
 }
 
-// TestSendJSON testing the sendjson internal endpoint.
+// TestSendJSON 测试 /sendjson 内部服务端点
 func TestSendJSON(t *testing.T) {
 	t.Log("Given the need to test the SendJSON endpoint.")
 	{
 		req, err := http.NewRequest("GET", "/sendjson", nil)
 		if err != nil {
-			t.Fatal("\tShould be able to create a request.",
-				ballotX, err)
+			t.Fatal("\tShould be able to create a request.", ballotX, err)
 		}
-		t.Log("\tShould be able to create a request.",
-			checkMark)
+		t.Log("\tShould be able to create a request.", checkMark)
 
+		// 使用 httptest 包的 NewRecorder 函数创建一个 ResponseRecorder
+		// 用于记录返回的响应
 		rw := httptest.NewRecorder()
+
+		// 调用服务默认的多路选择器（mux）的 ServeHttp 方法
+		// 调用这个方法模仿了外部客户端对 /sendjson 服务端点的请求
 		http.DefaultServeMux.ServeHTTP(rw, req)
+
+		// 一旦 ServeHTTP 方法调用完成，http.ResponseRecorder 值就包含了 SendJSON 处理函数的响应
 
 		if rw.Code != 200 {
 			t.Fatal("\tShould receive \"200\"", ballotX, rw.Code)

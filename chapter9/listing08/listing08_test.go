@@ -1,4 +1,4 @@
-// Sample test to show how to write a basic unit table test.
+// 这个示例程序展示如何写一个基本的表组测试
 package listing08
 
 import (
@@ -6,18 +6,19 @@ import (
 	"testing"
 )
 
-const checkMark = "\u2713"
-const ballotX = "\u2717"
+const (
+	checkMark = "\u2713"
+	ballotX   = "\u2717"
+)
 
-// TestDownload validates the http Get function can download
-// content and handles different status conditions properly.
+// TestDownload 确认 http 包的 Get 函数可以下载内容并正确处理不同的状态
 func TestDownload(t *testing.T) {
-	var urls = []struct {
+	urls := []struct {
 		url        string
 		statusCode int
 	}{
 		{
-			"http://www.goinggo.net/feeds/posts/default?alt=rss",
+			"https://anotherdayu.com/?feed=rss",
 			http.StatusOK,
 		},
 		{
@@ -29,25 +30,20 @@ func TestDownload(t *testing.T) {
 	t.Log("Given the need to test downloading different content.")
 	{
 		for _, u := range urls {
-			t.Logf("\tWhen checking \"%s\" for status code \"%d\"",
-				u.url, u.statusCode)
+			t.Logf("\tWhen checking \"%s\" for status code \"%d\"", u.url, u.statusCode)
 			{
 				resp, err := http.Get(u.url)
 				if err != nil {
-					t.Fatal("\t\tShould be able to Get the url.",
-						ballotX, err)
+					t.Fatal("\t\tShould be able to Get the url.", ballotX, err)
 				}
-				t.Log("\t\tShould be able to Get the url.",
-					checkMark)
+				t.Log("\t\tShould be able to Get the url.", checkMark)
 
 				defer resp.Body.Close()
 
 				if resp.StatusCode == u.statusCode {
-					t.Logf("\t\tShould have a \"%d\" status. %v",
-						u.statusCode, checkMark)
+					t.Logf("\t\tShould have a \"%d\" status. %v", u.statusCode, checkMark)
 				} else {
-					t.Errorf("\t\tShould have a \"%d\" status. %v %v",
-						u.statusCode, ballotX, resp.StatusCode)
+					t.Errorf("\t\tShould have a \"%d\" status. %v %v", u.statusCode, ballotX, resp.StatusCode)
 				}
 			}
 		}

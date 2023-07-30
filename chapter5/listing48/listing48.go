@@ -29,9 +29,7 @@ type admin struct {
 
 // notify 使用 "指针接收者" 实现了 notifier 接口
 func (a *admin) notify() {
-	fmt.Printf("Sending admin email to %s<%s>\n",
-		a.name,
-		a.email)
+	fmt.Printf("Sending admin email to %s<%s>\n", a.name, a.email)
 }
 
 func main() {

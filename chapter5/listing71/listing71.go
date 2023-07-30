@@ -10,7 +10,7 @@ func main() {
 	// 创建 entities 包中的 User 类型的值
 	u := entities.User{
 		Name: "Bill",
-		// 由于是未公开的字段，所以无法直接通过结构字面量的方式初始化该字段
+		// 由于 email 是未公开的字段，所以无法直接通过结构字面量的方式初始化该字段
 		// unknown entities.User field 'email' in struct literal
 		// email: "bill@email.com",
 	}

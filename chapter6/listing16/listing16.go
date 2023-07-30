@@ -14,6 +14,7 @@ var (
 	// wg 用来等待程序结束
 	wg sync.WaitGroup
 
+	// 互斥锁
 	// mutex 用来定义一段代码临界区
 	mutex sync.Mutex
 )

@@ -1,4 +1,5 @@
-// 这个示例程序展示如何在程序里造成竞争状态实际上不希望出现这种情况
+// 这个示例程序展示如何在程序里造成竞争状态
+// 实际上不希望出现这种情况
 package main
 
 import (
@@ -30,16 +31,17 @@ func main() {
 	fmt.Println("Final Counter:", counter)
 }
 
-// incCounter 增加包里 counter 变量的值
+// incCounter 增加 counter 变量的值
 func incCounter(id int) {
 	// 在函数退出时调用 Done 来通知 main 函数工作已经完成
 	defer wg.Done()
 
 	for count := 0; count < 1000; count++ {
 		// 捕获 counter 的值
-		// 这里是：将 counter 变量的副本存入一个叫作 value 的本地变量
+		// 这里是将 counter 变量的副本存入一个叫作 value 的本地变量
 		value := counter
 
+		// yield the thread and be placed back in queue
 		// 当前 goroutine 从线程退出，并放回到队列
 		runtime.Gosched()
 

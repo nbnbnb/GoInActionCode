@@ -26,6 +26,7 @@ func main() {
 	go player("Nadal", court)
 	go player("Djokovic", court)
 
+	// 将 1 发送到通道中
 	// 发球
 	court <- 1
 
@@ -40,8 +41,11 @@ func player(name string, court chan int) {
 
 	// 这是一个无限循环
 	for {
+		// 程序暂停，从通道中等待值
 		// 等待球被击打过来
 		ball, ok := <-court
+
+		// 如果通道关闭了，ok == false
 		if !ok {
 			// 如果通道被关闭，我们就赢了
 			fmt.Printf("Player %s Won\n", name)
@@ -51,6 +55,7 @@ func player(name string, court chan int) {
 		// 选随机数，然后用这个数来判断我们是否丢球
 		n := rand.Intn(100)
 
+		// 如果是 13 的倍数，表示我们丢球了
 		if n%13 == 0 {
 
 			fmt.Printf("Player %s Missed\n", name)
@@ -61,10 +66,13 @@ func player(name string, court chan int) {
 			return
 		}
 
-		// 显示击球数，并将击球数加 1
+		// 显示击球数
 		fmt.Printf("Player %s Hit %d\n", name, ball)
+
+		// 将击球数加 1
 		ball++
 
+		// 向通道里面发送一个值
 		// 将球打向对手
 		court <- ball
 	}

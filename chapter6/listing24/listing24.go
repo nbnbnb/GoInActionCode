@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// 注意：常量包的命名方式
 const (
 	// 要使用的 goroutine 的数量
 	numberGoroutines = 4
@@ -27,10 +28,11 @@ func init() {
 
 func main() {
 	// 创建一个有缓冲的通道来管理工作
+	// 第二个值表示缓冲区大小
 	tasks := make(chan string, taskLoad)
 
-	// 启动 goroutine 来处理工作
 	wg.Add(numberGoroutines)
+
 	for gr := 1; gr <= numberGoroutines; gr++ {
 		// 启动 goroutine
 		go worker(tasks, gr)
@@ -45,6 +47,9 @@ func main() {
 	// 当所有工作都处理完时关闭通道以便所有 goroutine 退出
 	// 当通道关闭后， goroutine 依旧可以从通道接收数据，但是不能再向通道里发送数据
 	// 从一个已经关闭且没有数据的通道里获取数据，总会立刻返回，并返回一个通道类型的零值
+
+	// 相较于无缓冲的通道
+	// 有缓冲的通道，一定要调用 close 函数 来关闭通道
 	close(tasks)
 
 	// 等待所有工作完成

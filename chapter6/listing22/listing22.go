@@ -14,12 +14,13 @@ func main() {
 	// 创建一个无缓冲的通道
 	baton := make(chan int)
 
-	// 为最后一位跑步者将计数加 1
+	// 等待最后一个接力者
 	wg.Add(1)
 
 	//  第一位跑步者持有接力棒
 	go Runner(baton)
 
+	// 向通道发送数据
 	// 开始比赛
 	baton <- 1
 
@@ -31,6 +32,7 @@ func main() {
 func Runner(baton chan int) {
 	var newRunner int
 
+	// 程序暂停，从通道接收数据
 	// 等待接力棒
 	// 从通道读取数据
 	runner := <-baton
@@ -42,6 +44,7 @@ func Runner(baton chan int) {
 	if runner != 4 {
 		newRunner = runner + 1
 		fmt.Printf("Runner %d To The Line\n", newRunner)
+		// 创建一个新的 goroutine 来跑步
 		go Runner(baton)
 	}
 
@@ -51,13 +54,12 @@ func Runner(baton chan int) {
 	// 比赛结束了吗？
 	if runner == 4 {
 		fmt.Printf("Runner %d Finished, Race Over\n", runner)
+		// 最后一个跑步者完成
 		wg.Done()
 		return
 	}
 
-	fmt.Printf("Runner %d Exchange With Runner %d\n",
-		runner,
-		newRunner)
+	fmt.Printf("Runner %d Exchange With Runner %d\n", runner, newRunner)
 
 	// 将接力棒交给下一位跑步者
 	// 数据发送到通道

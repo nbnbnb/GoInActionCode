@@ -37,8 +37,10 @@ func incCounter(id int) {
 	defer wg.Done()
 
 	for count := 0; count < 1000; count++ {
+
 		// 使用 atomic 包来安全地增加 counter 的值
 		// 安全地对 counter 加 1
+		// 注意：此处传递的是一个地址
 		atomic.AddInt64(&counter, 1)
 
 		// 当前 goroutine 从线程退出，并放回到队列

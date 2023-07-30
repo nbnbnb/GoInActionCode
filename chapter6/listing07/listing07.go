@@ -11,8 +11,6 @@ func main() {
 	// 分配 2 个逻辑处理器给调度器使用
 	runtime.GOMAXPROCS(2)
 
-	// wg 用来等待程序完成
-	// 计数加 2，表示要等待两个 goroutine
 	var wg sync.WaitGroup
 	wg.Add(2)
 
@@ -44,6 +42,7 @@ func main() {
 	}()
 
 	fmt.Println("Waiting To Finish")
+
 	// 等待 goroutine 结束
 	wg.Wait()
 

@@ -17,16 +17,17 @@ var names = []string{
 	"jason",
 }
 
+// 一个自定义类型
 // namePrinter 使用特定方式打印名字
 type namePrinter struct {
 	name string
 }
 
-// Task 实现 Worker 接口
+// namePrinter 实现 Worker 接口
 func (m *namePrinter) Task() {
 	log.Println(m.name)
-	// 等待 100ms
-	time.Sleep(time.Millisecond * 100)
+	// 等待 10ms
+	time.Sleep(time.Millisecond * 10)
 }
 
 func main() {
@@ -47,9 +48,9 @@ func main() {
 			}
 
 			go func() {
-				// 将任务提交执行
-				// 当 Run 返回时我们就知道任务已经处理完成
+				// 将 work 提交到 pool 中
 				pool.Run(&np)
+				// 设置提交任务执行完毕
 				wg.Done()
 			}()
 		}

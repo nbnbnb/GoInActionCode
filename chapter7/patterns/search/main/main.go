@@ -1,6 +1,5 @@
-// This sample program demonstrates how to implement a pattern for
-// concurrent requesting results from different systems and either
-// wait for all the results to return or just the first one.
+// 示例并行请求
+// 等待全部返回或者第一个返回
 package main
 
 import (
@@ -8,11 +7,12 @@ import (
 	"log"
 )
 
-// main is the entry point for all Go programs.
 func main() {
 	// Submit the search and display the results.
 	results := search.Submit(
 		"golang",
+		// option 配置
+		// 只返回第一个结果
 		search.OnlyFirst,
 		search.Google,
 		search.Bing,
@@ -23,7 +23,9 @@ func main() {
 		log.Printf("main : Results : Info : %+v\n", result)
 	}
 
-	// This time we want to wait for all the results.
+	log.Println("--------------------------------------------------")
+
+	// 等待所有的结果返回
 	results = search.Submit(
 		"golang",
 		search.Google,

@@ -1,5 +1,3 @@
-// Package search : seachers.go contains all the different implementations
-// for the existing searchers.
 package search
 
 import (
@@ -8,16 +6,14 @@ import (
 	"time"
 )
 
-// init is called before main.
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-// Google provides support for Google searches.
+// Google
 type google struct{}
 
-// Search implements the Searcher interface. It performs a search
-// against Google.
+// Google 实现接口
 func (g google) Search(term string, results chan<- []Result) {
 	log.Printf("Google : Search : Started : search term[%s]\n", term)
 
@@ -39,11 +35,10 @@ func (g google) Search(term string, results chan<- []Result) {
 	results <- r
 }
 
-// Bing provides support for Bing searches.
+// Bing
 type bing struct{}
 
-// Search implements the Searcher interface. It performs a search
-// against Bing.
+// Bing 实现接口
 func (b bing) Search(term string, results chan<- []Result) {
 	log.Printf("Bing : Search : Started : search term [%s]\n", term)
 
@@ -65,11 +60,10 @@ func (b bing) Search(term string, results chan<- []Result) {
 	results <- r
 }
 
-// Yahoo provides support for Yahoo searches.
+// Yahoo
 type yahoo struct{}
 
-// Search implements the Searcher interface. It performs a search
-// against Yahoo.
+// Yahoo 实现接口
 func (y yahoo) Search(term string, results chan<- []Result) {
 	log.Printf("Yahoo : Search : Started : search term [%s]\n", term)
 

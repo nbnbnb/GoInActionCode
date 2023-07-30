@@ -17,9 +17,11 @@ func main() {
 	// 为本次执行分配超时时间
 	r := runner.New(timeout)
 
-	// 加入要执行的任务
-	r.Add(createTask(), createTask(), createTask())
+	// 创建 5 个函数，加入要执行的任务
+	// 实际只会执行 3 个，应用后 2 个会超时
+	r.Add(createTask(), createTask(), createTask(), createTask(), createTask())
 
+	// 调用 Start 方法开始执行
 	// 执行任务并处理结果
 	if err := r.Start(); err != nil {
 		switch err {

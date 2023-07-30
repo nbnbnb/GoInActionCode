@@ -1,10 +1,9 @@
-// Package search : search.go manages the searching of results
-// against Google, Yahoo and Bing.
 package search
 
 import "log"
 
-// Result represents a search result that was found.
+// 自定义类型
+// 封装搜索结果
 type Result struct {
 	Engine      string
 	Title       string
@@ -12,71 +11,78 @@ type Result struct {
 	Link        string
 }
 
-// Searcher declares an interface used to leverage different
-// search engines to find results.
+// 自定义接口
 type Searcher interface {
 	Search(searchTerm string, searchResults chan<- []Result)
 }
 
-// searchSession holds information about the current search submission.
-// It contains options, searchers and a channel down which we will receive
-// results.
+// 自定义类型
+// 封装搜索会话
 type searchSession struct {
 	searchers  map[string]Searcher
 	first      bool
 	resultChan chan []Result
 }
 
-// Google search will be added to the search session if this option
-// is provided.
+// 查询 Google
 func Google(s *searchSession) {
 	log.Println("search : Submit : Info : Adding Google")
+	// 添加到 map 中
 	s.searchers["google"] = google{}
 }
 
-// Bing search will be added to this search session if this option
-// is provided.
+// 查询 Bing
 func Bing(s *searchSession) {
 	log.Println("search : Submit : Info : Adding Bing")
+	// 添加到 map 中
 	s.searchers["bing"] = bing{}
 }
 
-// Yahoo search will be enabled if this option is provided as an argument
-// to Submit.
+// 查询 Yahoo
 func Yahoo(s *searchSession) {
 	log.Println("search : Submit : Info : Adding Yahoo")
+	// 添加到 map 中
 	s.searchers["yahoo"] = yahoo{}
 }
 
-// OnlyFirst is an option that will restrict the search session to just the
-// first result.
-func OnlyFirst(s *searchSession) { s.first = true }
+// 设置是否只返回第一个结果
+func OnlyFirst(s *searchSession) {
+	// 设置 flag
+	s.first = true
+}
 
-// Submit uses goroutines and channels to perform a search against the three
-// leading search engines concurrently.
+// 提交查询
 func Submit(query string, options ...func(*searchSession)) []Result {
+	// 本地变量
+	// 零值初始化
 	var session searchSession
+
+	// 创建一个 map[string]
 	session.searchers = make(map[string]Searcher)
+
+	// 创建一个通道
+	// 通道值是 []Result
 	session.resultChan = make(chan []Result)
 
+	// options 是是个配置函数列表
 	for _, opt := range options {
+		// 执行每一个 option 函数
 		opt(&session)
 	}
 
-	// Perform the searches concurrently. Using a map because
-	// it returns the searchers in a random order every time.
+	// 执行并行查询
 	for _, s := range session.searchers {
+		// 通过 goroutine 执行查询
 		go s.Search(query, session.resultChan)
 	}
 
 	var results []Result
 
-	// Wait for the results to come back.
+	// 等待结果返回
 	for search := 0; search < len(session.searchers); search++ {
-		// If we just want the first result, don't wait any longer by
-		// concurrently discarding the remaining searchResults.
-		// Failing to do so will leave the Searchers blocked forever.
+		// 如果只需要第一个结果
 		if session.first && search > 0 {
+			// 丢弃结果
 			go func() {
 				r := <-session.resultChan
 				log.Printf("search : Submit : Info : Results Discarded : Results[%d]\n", len(r))
@@ -84,15 +90,17 @@ func Submit(query string, options ...func(*searchSession)) []Result {
 			continue
 		}
 
-		// Wait to recieve results.
 		log.Println("search : Submit : Info : Waiting For Results...")
+		// 从通道中等待结果
 		result := <-session.resultChan
 
-		// Save the results to the final slice.
 		log.Printf("search : Submit : Info : Results Used : Results[%d]\n", len(result))
+		// 获取到结果
+		// 将结果添加到 results 中
 		results = append(results, result...)
 	}
 
 	log.Printf("search : Submit : Completed : Found [%d] Results\n", len(results))
+
 	return results
 }

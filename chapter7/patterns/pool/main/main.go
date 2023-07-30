@@ -43,9 +43,11 @@ var idCounter int32
 // createConnection 是一个工厂函数
 // 当需要一个新连接时，资源池会调用这个函数
 func createConnection() (io.Closer, error) {
+	// 使用原子方式保证唯一性
 	id := atomic.AddInt32(&idCounter, 1)
 	log.Println("Create: New Connection", id)
 
+	// 创建一个 dbConnection 类型，并返回其地址
 	return &dbConnection{id}, nil
 }
 

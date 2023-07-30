@@ -39,42 +39,52 @@ func New(fn func() (io.Closer, error), size uint) (*Pool, error) {
 // Acquire 从池中获取一个资源
 func (pool *Pool) Acquire() (io.Closer, error) {
 	select {
+	// 从通道里面获取数据
 	// 检查是否有空闲的资源
 	case resource, ok := <-pool.resources:
+		// 表示复用池中的资源
 		log.Println("Acquire:", "--------------------------- Shared Resource ---------------------------")
 		if !ok {
 			return nil, ErrPoolClosed
 		}
+
+		// 返回池里面的资源
 		return resource, nil
 
 	// 因为没有空闲资源可用，所以提供一个新资源
 	default:
 		log.Println("Acquire:", "New Resource")
+		// 从工厂创建一个新资源
 		return pool.factory()
 	}
 }
 
 // Release 将一个使用后的资源放回池里
-func (pool *Pool) Release(r io.Closer) {
+func (pool *Pool) Release(resource io.Closer) {
 	// 保证本操作和 Close 操作的安全
 	pool.mutex.Lock()
+
+	// 发方返回时执行
 	defer pool.mutex.Unlock()
 
 	// 如果池已经被关闭，销毁这个资源
 	if pool.closed {
-		r.Close()
+		// 回调 Close 方法
+		resource.Close()
 		return
 	}
 
 	select {
+	// 将一个释放的 resource 放入通道周昂
 	// 试图将这个资源放入队列
-	case pool.resources <- r:
+	case pool.resources <- resource:
 		log.Println("Release:", "In Queue")
 
+	// 达到通道最大缓冲数
 	// 如果队列已满，则关闭这个资源
 	default:
 		log.Println("Release:", "Closing")
-		r.Close()
+		resource.Close()
 	}
 }
 
@@ -82,6 +92,8 @@ func (pool *Pool) Release(r io.Closer) {
 func (pool *Pool) Close() {
 	// 保证本操作与 Release 操作的安全
 	pool.mutex.Lock()
+
+	// 方法返回时，解锁
 	defer pool.mutex.Unlock()
 
 	// 如果 pool 已经被关闭，什么也不做
@@ -89,13 +101,16 @@ func (pool *Pool) Close() {
 		return
 	}
 
+	// 设置状态位
 	// 将池关闭
 	pool.closed = true
 
+	// 关闭通道
 	// 在清空通道里的资源之前，将通道关闭
 	// 如果不这样做，会发生死锁
 	close(pool.resources)
 
+	// 回调 Close 方法
 	// 关闭资源
 	for resource := range pool.resources {
 		resource.Close()

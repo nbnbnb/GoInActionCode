@@ -53,9 +53,11 @@ func createConnection() (io.Closer, error) {
 
 func main() {
 	var wg sync.WaitGroup
+
 	wg.Add(maxGoroutines)
 
 	// 创建用来管理连接的池
+	// 指定工厂函数和池容量
 	pool, err := pool.New(createConnection, pooledResources)
 	if err != nil {
 		log.Println(err)
@@ -98,6 +100,7 @@ func performQueries(query int, pool *pool.Pool) {
 		return
 	}
 
+	// 方法返回的时候
 	// 将该连接释放回池里
 	defer pool.Release(conn)
 

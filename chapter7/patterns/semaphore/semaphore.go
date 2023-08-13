@@ -101,8 +101,10 @@ func start(name string, maxReads int, maxReaders int) *readerWriter {
 	rw := readerWriter{
 		name: name,
 		// 初始化 channel（无缓冲）
-		shutdown:   make(chan struct{}),
-		maxReads:   maxReads,
+		shutdown: make(chan struct{}),
+		// 最大读 channel 缓冲个数
+		maxReads: maxReads,
+		// 最大读 goroutines 数量
 		maxReaders: maxReaders,
 		// 初始化 channel（有缓冲）
 		readerControl: make(semaphore, maxReads),

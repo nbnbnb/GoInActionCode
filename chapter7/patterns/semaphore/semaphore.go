@@ -83,11 +83,11 @@ func main() {
 
 	// Create a new readerWriter with a max of 3 reads at a time
 	// and a total of 6 reader goroutines.
-	first := start("First", 3, 6, 1)
+	first := start("First", 3, 6)
 
 	// Create a new readerWriter with a max of 2 reads at a time
 	// and a total of 2 reader goroutines.
-	second := start("Second", 2, 2, 1)
+	second := start("Second", 2, 2)
 
 	// Let the program run for 2 seconds.
 	time.Sleep(2 * time.Second)
@@ -100,7 +100,7 @@ func main() {
 
 // start uses the generator pattern to create the readerWriter value. It launches
 // goroutines to process the work, returning the created ReaderWriter value.
-func start(name string, maxReadBufSize int, maxReaderGoroutineSize int, maxWriterGoroutineSize int) *readerWriter {
+func start(name string, maxReadBufSize int, maxReaderGoroutineSize int) *readerWriter {
 	// Create a value of readerWriter and initialize.
 	rw := readerWriter{
 		name: name,
@@ -110,17 +110,17 @@ func start(name string, maxReadBufSize int, maxReaderGoroutineSize int, maxWrite
 		maxReadBufSize: maxReadBufSize,
 		// 最大读 goroutines 数量
 		maxReaderGoroutineSize: maxReaderGoroutineSize,
-		// 最大写 goroutines 数量
-		maxWriterGoroutineSize: maxWriterGoroutineSize,
+		// 最大写 goroutines 数量（固定 1 个）
+		maxWriterGoroutineSize: 1,
 		// 初始化 channel（有缓冲）
 		readerControl: make(semaphore, maxReadBufSize),
 	}
 
 	// Launch a number of reader goroutines and let them start reading.
 	// reportShutdown 记录读 maxReaderGoroutineSize 的数量
-	rw.reportShutdown.Add(maxReaderGoroutineSize)
+	rw.reportShutdown.Add(rw.maxReaderGoroutineSize)
 
-	for goroutine := 0; goroutine < maxReaderGoroutineSize; goroutine++ {
+	for goroutine := 0; goroutine < rw.maxReaderGoroutineSize; goroutine++ {
 		// 启动读 goroutines
 		// 这个 goroutines 完成后，调用 rw.reportShutdown.Done() 方法
 		go rw.reader(goroutine)
@@ -128,7 +128,7 @@ func start(name string, maxReadBufSize int, maxReaderGoroutineSize int, maxWrite
 
 	// Launch the single writer goroutine and let it start writing.
 	// reportShutdown 记录写 maxWriterGoroutineSize 的数量
-	rw.reportShutdown.Add(maxWriterGoroutineSize)
+	rw.reportShutdown.Add(rw.maxWriterGoroutineSize)
 
 	// 启动一个写 goroutines
 	// 这个 goroutines 完成后，调用 rw.reportShutdown.Done() 方法

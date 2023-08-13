@@ -4,7 +4,7 @@ package work
 import "sync"
 
 // 定义一个接口
-// Worker 必须满足接口类型，才能使用工作池
+// 必须满足这个接口类型，才能使用工作池
 type Worker interface {
 	Task()
 }
@@ -30,12 +30,14 @@ func New(maxGoroutines int) *Pool {
 	for i := 0; i < maxGoroutines; i++ {
 		go func() {
 			// 程序阻塞在这里，直到有任务传入
+
 			// 从通道中获取 work
 			// 注意：此处是用迭代器的方式
 			for work := range pool.work {
 				// 执行 Task 方法
 				work.Task()
 			}
+
 			// 设置 goroutine 执行完毕
 			pool.wg.Done()
 		}()
@@ -53,8 +55,9 @@ func (pool *Pool) Run(work Worker) {
 
 // Shutdown 等待所有 goroutine 停止工作
 func (pool *Pool) Shutdown() {
-	// 关闭通道
+	// 一定要调用关闭通道方法
 	close(pool.work)
-	// 所有的 goroutine 执行完毕
+
+	// 等待所有的 goroutine 执行完毕
 	pool.wg.Wait()
 }

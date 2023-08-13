@@ -18,12 +18,13 @@ var names = []string{
 }
 
 // 一个自定义类型
-// namePrinter 使用特定方式打印名字
+// namePrinter
 type namePrinter struct {
 	name string
 }
 
 // namePrinter 实现 Worker 接口
+// 所以可以传递到工作池中
 func (m *namePrinter) Task() {
 	log.Println(m.name)
 	// 等待 10ms
@@ -48,8 +49,10 @@ func main() {
 			}
 
 			go func() {
+				// np 实现 Worker 接口
 				// 将 work 提交到 pool 中
 				pool.Run(&np)
+
 				// 设置提交任务执行完毕
 				wg.Done()
 			}()

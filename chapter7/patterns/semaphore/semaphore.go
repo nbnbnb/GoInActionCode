@@ -51,13 +51,17 @@ type (
 		// reportShutdown is used by the goroutines to report they are shutdown.
 		reportShutdown sync.WaitGroup
 
-		// maxReads defined the maximum number of reads that can occur at a time.
+		// maxReadBufSize defined the maximum number of reads that can occur at a time.
 		// 读通道的最多缓冲个数
-		maxReads int
+		maxReadBufSize int
 
-		// maxReaders defines the number of goroutines launched to perform read operations.
+		// maxReaderGoroutineSize defines the number of goroutines launched to perform read operations.
 		// 最多使用多少个 goroutines 进行读操作
-		maxReaders int
+		maxReaderGoroutineSize int
+
+		// maxWriterGoroutineSize defines the number of goroutines launched to perform write operations.
+		// 最多使用多少个 goroutines 进行写操作
+		maxWriterGoroutineSize int
 
 		// currentReads keeps a safe count of the current number of reads occurring
 		// at any give time.
@@ -79,11 +83,11 @@ func main() {
 
 	// Create a new readerWriter with a max of 3 reads at a time
 	// and a total of 6 reader goroutines.
-	first := start("First", 3, 6)
+	first := start("First", 3, 6, 1)
 
 	// Create a new readerWriter with a max of 2 reads at a time
 	// and a total of 2 reader goroutines.
-	second := start("Second", 2, 2)
+	second := start("Second", 2, 2, 1)
 
 	// Let the program run for 2 seconds.
 	time.Sleep(2 * time.Second)
@@ -96,33 +100,35 @@ func main() {
 
 // start uses the generator pattern to create the readerWriter value. It launches
 // goroutines to process the work, returning the created ReaderWriter value.
-func start(name string, maxReads int, maxReaders int) *readerWriter {
+func start(name string, maxReadBufSize int, maxReaderGoroutineSize int, maxWriterGoroutineSize int) *readerWriter {
 	// Create a value of readerWriter and initialize.
 	rw := readerWriter{
 		name: name,
 		// 初始化 channel（无缓冲）
 		shutdown: make(chan struct{}),
 		// 最大读 channel 缓冲个数
-		maxReads: maxReads,
+		maxReadBufSize: maxReadBufSize,
 		// 最大读 goroutines 数量
-		maxReaders: maxReaders,
+		maxReaderGoroutineSize: maxReaderGoroutineSize,
+		// 最大写 goroutines 数量
+		maxWriterGoroutineSize: maxWriterGoroutineSize,
 		// 初始化 channel（有缓冲）
-		readerControl: make(semaphore, maxReads),
+		readerControl: make(semaphore, maxReadBufSize),
 	}
 
 	// Launch a number of reader goroutines and let them start reading.
-	// reportShutdown 记录读 goroutines 的数量
-	rw.reportShutdown.Add(maxReaders)
+	// reportShutdown 记录读 maxReaderGoroutineSize 的数量
+	rw.reportShutdown.Add(maxReaderGoroutineSize)
 
-	for goroutine := 0; goroutine < maxReaders; goroutine++ {
+	for goroutine := 0; goroutine < maxReaderGoroutineSize; goroutine++ {
 		// 启动读 goroutines
 		// 这个 goroutines 完成后，调用 rw.reportShutdown.Done() 方法
 		go rw.reader(goroutine)
 	}
 
 	// Launch the single writer goroutine and let it start writing.
-	// reportShutdown 记录写 goroutines 的数量
-	rw.reportShutdown.Add(1)
+	// reportShutdown 记录写 maxWriterGoroutineSize 的数量
+	rw.reportShutdown.Add(maxWriterGoroutineSize)
 
 	// 启动一个写 goroutines
 	// 这个 goroutines 完成后，调用 rw.reportShutdown.Done() 方法
@@ -278,18 +284,18 @@ func (rw *readerWriter) WriteLock() {
 	rw.write.Add(1)
 
 	// Acquire all the buffers from the semaphore channel.
-	// 向读缓冲区发送 maxReads 个数据
-	// 所以后续调用 ReadLock - rw.readerControl.Acquire(1) 方法将会阻塞（通道肯定会达到 maxReads）
-	rw.readerControl.Acquire(rw.maxReads)
+	// 向读缓冲区发送 maxReadBufSize 个数据
+	// 所以后续调用 ReadLock - rw.readerControl.Acquire(1) 方法将会阻塞（通道肯定会达到 maxReadBufSize）
+	rw.readerControl.Acquire(rw.maxReadBufSize)
 }
 
 // WriteUnlock releases the write lock and allows reads to occur.
 // 释放写锁
 func (rw *readerWriter) WriteUnlock() {
 	// Release all the buffers back into the semaphore channel.
-	// 从读缓冲区读取 maxReads 个数据
+	// 从读缓冲区读取 maxReadBufSize 个数据
 	// 释放缓冲区空间，后续的 ReadLock - rw.readerControl.Acquire(1) 方法将不会阻塞
-	rw.readerControl.Release(rw.maxReads)
+	rw.readerControl.Release(rw.maxReadBufSize)
 
 	// Release the write lock.
 	// 释放写标记，ReadLock 方法首先要等待写标记释放

@@ -140,6 +140,8 @@ func shutdown(readerWriters ...*readerWriter) {
 	// Launch each call to the stop method as a goroutine.
 	for _, readerWriter := range readerWriters {
 		// 调用所有的 stop 方法
+		// 由于此处创建了新的 goroutines
+		// 所以下面需要使用临时的 WaitGroup 等待所有的 goroutines 关闭（处理完成）
 		go readerWriter.stop(&tpWait)
 	}
 
@@ -157,12 +159,12 @@ func (rw *readerWriter) stop(tpWait *sync.WaitGroup) {
 
 	// Close the channel which will causes all the goroutines waiting on
 	// this channel to receive the notification to shutdown.
-	// 关闭 channel
+	// 通知所有的 reader/writer，goroutines 关闭
 	close(rw.shutdown)
 
 	// Wait for all the goroutine to call Done on the waitgroup we
 	// are waiting on.
-	// 等待所有的 reader/writer goroutines 关闭
+	// 等待所有的 reader/writer，不要再继续执行了
 	rw.reportShutdown.Wait()
 
 	log.Printf("%s\t: #####> Stopped", rw.name)

@@ -11,7 +11,7 @@ func printer(ch chan int) {
 	// 从 channel 中获取值
 	// 如果没有获取到值，就等待，直到通道关闭
 	for i := range ch {
-		fmt.Printf("Received %d ", i)
+		fmt.Printf("Received %d \n", i)
 	}
 
 	// 通知计算器 -1

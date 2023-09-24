@@ -10,8 +10,10 @@ import (
 )
 
 const (
+	// ✓
 	checkMark = "\u2713"
-	ballotX   = "\u2717"
+	// ✗
+	ballotX = "\u2717"
 )
 
 // feed 模仿了我们期望接收的 XML 文档
@@ -54,7 +56,8 @@ func TestDownload(t *testing.T) {
 	{
 		t.Logf("\tWhen checking \"%s\" for status code \"%d\"", server.URL, statusCode)
 		{
-			//  http.Get 方法调用时并不知道我们的调用是否经过互联网
+			// http.Get 方法调用时并不知道我们的调用是否经过互联网
+			// 这个 URL 是 MockServer 提供的
 			resp, err := http.Get(server.URL)
 			if err != nil {
 				t.Fatal("\t\tShould be able to make the Get call.", ballotX, err)

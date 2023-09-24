@@ -5,6 +5,7 @@ import (
 	"sync"
 )
 
+// 创建一个等待计数器
 var wg sync.WaitGroup
 
 func printer(ch chan int) {
@@ -14,7 +15,7 @@ func printer(ch chan int) {
 		fmt.Printf("Received %d \n", i)
 	}
 
-	// 通知计算器 -1
+	// 等待计数器 - 1
 	wg.Done()
 }
 
@@ -23,9 +24,10 @@ func main() {
 	c := make(chan int)
 
 	// 启动一个 goroutine
+	// 传递创建的 channel
 	go printer(c)
 
-	// 等待计数加 1
+	// 设置等待计数器 + 1
 	wg.Add(1)
 
 	for i := 1; i <= 10; i++ {
@@ -36,6 +38,6 @@ func main() {
 	// 关闭 channel
 	close(c)
 
-	// 计数器清零
+	// 等待计数器 = 0 时返回
 	wg.Wait()
 }

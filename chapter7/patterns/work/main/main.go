@@ -2,10 +2,11 @@
 package main
 
 import (
-	"GoInActionCode/chapter7/patterns/work"
 	"log"
 	"sync"
 	"time"
+
+	"goinaction.zhangjin.me/chapter7/patterns/work"
 )
 
 // names 提供了一组用来显示的名字

@@ -6,11 +6,12 @@
 package handlers_test
 
 import (
-	"GoInActionCode/chapter9/listing17/handlers"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"goinaction.zhangjin.me/chapter9/listing17/handlers"
 )
 
 const (

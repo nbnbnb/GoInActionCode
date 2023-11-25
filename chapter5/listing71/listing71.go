@@ -2,8 +2,9 @@
 package main
 
 import (
-	"GoInActionCode/chapter5/listing71/entities"
 	"fmt"
+
+	"goinaction.zhangjin.me/chapter5/listing71/entities"
 )
 
 func main() {

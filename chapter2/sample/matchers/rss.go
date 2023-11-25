@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"regexp"
 
-	"goinaction.zhangjin.me/search"
+	"goinaction.zhangjin.me/chapter2/sample/search"
 )
 
 type (

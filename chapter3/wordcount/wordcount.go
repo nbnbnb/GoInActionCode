@@ -1,9 +1,10 @@
 package main
 
 import (
-	"GoInActionCode/chapter3/words"
 	"fmt"
 	"io/ioutil"
+
+	"goinaction.zhangjin.me/chapter3/words"
 )
 
 func main() {

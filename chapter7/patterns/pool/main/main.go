@@ -2,13 +2,14 @@
 package main
 
 import (
-	"GoInActionCode/chapter7/patterns/pool"
 	"io"
 	"log"
 	"math/rand"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"goinaction.zhangjin.me/chapter7/patterns/pool"
 )
 
 const (

@@ -3,7 +3,7 @@
 package main
 
 import (
-	"GoInActionCode/chapter10/listing06/pubsub"
+	"goinaction.zhangjin.me/chapter10/listing06/pubsub"
 )
 
 // publisher is an interface to allow this package to mock the

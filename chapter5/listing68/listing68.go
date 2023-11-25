@@ -3,8 +3,9 @@ package main
 
 import (
 	// 注意包引用语法
-	"GoInActionCode/chapter5/listing68/counters"
 	"fmt"
+
+	"goinaction.zhangjin.me/chapter5/listing68/counters"
 )
 
 func main() {

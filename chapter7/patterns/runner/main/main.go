@@ -2,10 +2,11 @@
 package main
 
 import (
-	"GoInActionCode/chapter7/patterns/runner"
 	"log"
 	"os"
 	"time"
+
+	"goinaction.zhangjin.me/chapter7/patterns/runner"
 )
 
 // timeout 规定了必须在多少秒内处理完成

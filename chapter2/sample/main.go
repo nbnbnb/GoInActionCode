@@ -4,12 +4,12 @@ import (
 	"log"
 	"os"
 
-	"goinaction.zhangjin.me/search"
+	"goinaction.zhangjin.me/chapter2/sample/search"
 
 	// 导入前面的 _ 表示
 	// 让 Go 语言对包做初始化操作，但是并不使用包里的标识符
 	// 只调用包里面的 init 函数
-	_ "goinaction.zhangjin.me/matchers"
+	_ "goinaction.zhangjin.me/chapter2/sample/matchers"
 )
 
 // init is called prior to main.

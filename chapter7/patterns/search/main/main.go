@@ -3,8 +3,9 @@
 package main
 
 import (
-	"GoInActionCode/chapter7/patterns/search"
 	"log"
+
+	"goinaction.zhangjin.me/chapter7/patterns/search"
 )
 
 func main() {

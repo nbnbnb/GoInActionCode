@@ -1,4 +1,4 @@
-// This sample program demonstrates how to decode a JSON string.
+// 这个示例程序展示如何解码 JSON 字符串
 package main
 
 import (
@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-// Contact represents our JSON string.
+// Contact 结构代表我们的 JSON 字符串
 type Contact struct {
 	Name    string `json:"name"`
 	Title   string `json:"title"`
@@ -17,7 +17,7 @@ type Contact struct {
 	} `json:"contact"`
 }
 
-// JSON contains a sample string to unmarshal.
+// JSON 包含用于反序列化的演示字符串
 var JSON = `{
 	"name": "Gopher",
 	"title": "programmer",
@@ -28,7 +28,7 @@ var JSON = `{
 }`
 
 func main() {
-	// Unmarshal the JSON string into our variable.
+	// 将 JSON 字符串反序列化到变量
 	var c Contact
 	err := json.Unmarshal([]byte(JSON), &c)
 	if err != nil {

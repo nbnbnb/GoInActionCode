@@ -1,5 +1,4 @@
-// This sample program demonstrates how to decode a JSON response
-// using the json package and NewDecoder function.
+// 这个示例程序展示如何使用 json 包和 NewDecoder 函数来解码 JSON 响应
 package main
 
 import (
@@ -10,7 +9,12 @@ import (
 )
 
 type (
-	// gResult maps to the result document received from the search.
+	// gResult 映射到从搜索拿到的结果文档
+
+	// 每个字段最后使用单引号声明了一个字符串
+	// 这些字符串被称作标签（ tag），是提供每个字段的元信息的一种机制，将 JSON 文档和结构类型里的字段一一映射起来
+	// 如果不存在标签，编码和解码过程会试图以大小写无关的方式，直接使用字段的名字进行匹配
+	// 如果无法匹配，对应的结构类型里的字段就包含其零值
 	gResult struct {
 		GsearchResultClass string `json:"GsearchResultClass"`
 		UnescapedURL       string `json:"unescapedUrl"`
@@ -22,7 +26,7 @@ type (
 		Content            string `json:"content"`
 	}
 
-	// gResponse contains the top level document.
+	// gResponse 包含顶级的文档
 	gResponse struct {
 		ResponseData struct {
 			Results []gResult `json:"results"`
@@ -31,17 +35,17 @@ type (
 )
 
 func main() {
-	uri := "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&rsz=8&q=golang"
+	uri := "https://zhangjin.tk/dl/go-search.json?v=1.0&rsz=8&q=golang"
 
-	// Issue the search against Google.
 	resp, err := http.Get(uri)
 	if err != nil {
 		log.Println("ERROR:", err)
 		return
 	}
+
 	defer resp.Body.Close()
 
-	// Decode the JSON response into our struct type.
+	// 将 JSON 响应解码到结构类型
 	var gr gResponse
 	err = json.NewDecoder(resp.Body).Decode(&gr)
 	if err != nil {
@@ -51,9 +55,8 @@ func main() {
 
 	fmt.Println(gr)
 
-	// Marshal the struct type into a pretty print
-	// version of the JSON document.
-	pretty, err := json.MarshalIndent(gr, "", "    ")
+	// 执行格式化输出
+	pretty, err := json.MarshalIndent(gr, "-", "    ")
 	if err != nil {
 		log.Println("ERROR:", err)
 		return

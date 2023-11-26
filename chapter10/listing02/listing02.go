@@ -1,4 +1,4 @@
-// Sample program demonstrating decoupling with interfaces.
+// 接口使用
 package main
 
 import (
@@ -13,31 +13,36 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-// =============================================================================
-
-// Data is the structure of the data we are copying.
+// 用户定义类型
 type Data struct {
 	Line string
 }
 
-// =============================================================================
+// 用户定义类型
+type System struct {
+	Xenia
+	Pillar
+}
 
-// Puller declares behavior for pulling data.
+// 用户定义类型
+type Xenia struct{}
+
+// 用户定义类型
+type Pillar struct{}
+
+// 用户定义接口
 type Puller interface {
 	Pull(d *Data) error
 }
 
-// Storer declares behavior for storing data.
+// 用户定义接口
 type Storer interface {
 	Store(d Data) error
 }
 
-// =============================================================================
-
-// Xenia is a system we need to pull data from.
-type Xenia struct{}
-
-// Pull knows how to pull data out of Xenia.
+// 方法 - Xenia 实现了 Puller 接口
+// 给用户定义的类型添加行为 —— 方法（方法实际上也是函数）
+// 在关键字 func 和方法名之间增加了一个参数
 func (Xenia) Pull(d *Data) error {
 	switch rand.Intn(10) {
 	case 1, 9:
@@ -53,28 +58,18 @@ func (Xenia) Pull(d *Data) error {
 	}
 }
 
-// Pillar is a system we need to store data into.
-type Pillar struct{}
-
-// Store knows how to store data into Pillar.
+// 方法 - Pillar 实现了 Storer 接口
+// 给用户定义的类型添加行为 —— 方法（方法实际上也是函数）
+// 在关键字 func 和方法名之间增加了一个参数
 func (Pillar) Store(d Data) error {
 	fmt.Println("Out:", d.Line)
 	return nil
 }
 
-// =============================================================================
-
-// System wraps Xenia and Pillar together into a single system.
-type System struct {
-	Xenia
-	Pillar
-}
-
-// =============================================================================
-
-// pull knows how to pull bulks of data from any Puller.
+// 函数 - 入参是 Puller 接口类型
 func pull(p Puller, data []Data) (int, error) {
 	for i := range data {
+		// 调用 Pull 方法
 		if err := p.Pull(&data[i]); err != nil {
 			return i, err
 		}
@@ -83,9 +78,10 @@ func pull(p Puller, data []Data) (int, error) {
 	return len(data), nil
 }
 
-// store knows how to store bulks of data from any Storer.
+// 函数 - 入参是 Storer 接口类型
 func store(s Storer, data []Data) (int, error) {
 	for i, d := range data {
+		// 调用 Store 方法
 		if err := s.Store(d); err != nil {
 			return i, err
 		}
@@ -94,13 +90,19 @@ func store(s Storer, data []Data) (int, error) {
 	return len(data), nil
 }
 
-// Copy knows how to pull and store data from the System.
+// 函数
 func Copy(sys *System, batch int) error {
+	// 初始化切片
 	data := make([]Data, batch)
 
+	// 隔离一个上下文
 	for {
+		// Xenia 实现了 Puller 接口，所以符合 pull 函数签名
+		// 调用 pull 函数
 		i, err := pull(&sys.Xenia, data)
 		if i > 0 {
+			// Pillar 实现了 Storer 接口，所以符合 store 函数签名
+			// 然后调用 store 函数
 			if _, err := store(&sys.Pillar, data[:i]); err != nil {
 				return err
 			}
@@ -115,14 +117,14 @@ func Copy(sys *System, batch int) error {
 // =============================================================================
 
 func main() {
-
-	// Initialize the system for use.
+	// 声明 sys 类型的变量，并初始化所以字段
+	// 注意结尾的 , 不能省略
 	sys := System{
 		Xenia:  Xenia{},
 		Pillar: Pillar{},
 	}
 
-	if err := Copy(&sys, 3); err != io.EOF {
+	if err := Copy(&sys, 10); err != io.EOF {
 		fmt.Println(err)
 	}
 }

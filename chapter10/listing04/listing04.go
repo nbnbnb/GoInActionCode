@@ -1,4 +1,4 @@
-// Sample program demonstrating decoupling with interface composition.
+// 接口使用
 package main
 
 import (
@@ -15,24 +15,36 @@ func init() {
 
 // =============================================================================
 
-// Data is the structure of the data we are copying.
+// 用户定义类型
 type Data struct {
 	Line string
 }
 
+// 用户定义类型（这个地方与 03 不同，包含的是两个接口）
+type System struct {
+	Puller
+	Storer
+}
+
+// 用户定义类型
+type Xenia struct{}
+
+// 用户定义类型
+type Pillar struct{}
+
 // =============================================================================
 
-// Puller declares behavior for pulling data.
+// 用户定义接口
 type Puller interface {
 	Pull(d *Data) error
 }
 
-// Storer declares behavior for storing data.
+// 用户定义接口
 type Storer interface {
 	Store(d Data) error
 }
 
-// PullStorer declares behavior for both pulling and storing.
+// 用户定义接口类型（同时实现两个接口）
 type PullStorer interface {
 	Puller
 	Storer
@@ -40,10 +52,9 @@ type PullStorer interface {
 
 // =============================================================================
 
-// Xenia is a system we need to pull data from.
-type Xenia struct{}
-
-// Pull knows how to pull data out of Xenia.
+// 方法 - Xenia 实现了 Puller 接口
+// 给用户定义的类型添加行为 —— 方法（方法实际上也是函数）
+// 在关键字 func 和方法名之间增加了一个参数
 func (Xenia) Pull(d *Data) error {
 	switch rand.Intn(10) {
 	case 1, 9:
@@ -59,10 +70,9 @@ func (Xenia) Pull(d *Data) error {
 	}
 }
 
-// Pillar is a system we need to store data into.
-type Pillar struct{}
-
-// Store knows how to store data into Pillar.
+// 方法 - Pillar 实现了 Storer 接口
+// 给用户定义的类型添加行为 —— 方法（方法实际上也是函数）
+// 在关键字 func 和方法名之间增加了一个参数
 func (Pillar) Store(d Data) error {
 	fmt.Println("Out:", d.Line)
 	return nil
@@ -70,15 +80,7 @@ func (Pillar) Store(d Data) error {
 
 // =============================================================================
 
-// System wraps Pullers and Stores together into a single system.
-type System struct {
-	Puller
-	Storer
-}
-
-// =============================================================================
-
-// pull knows how to pull bulks of data from any Puller.
+// 函数 - 入参是 Puller 接口类型
 func pull(p Puller, data []Data) (int, error) {
 	for i := range data {
 		if err := p.Pull(&data[i]); err != nil {
@@ -89,7 +91,7 @@ func pull(p Puller, data []Data) (int, error) {
 	return len(data), nil
 }
 
-// store knows how to store bulks of data from any Storer.
+// 函数 - 入参是 Storer 接口类型
 func store(s Storer, data []Data) (int, error) {
 	for i, d := range data {
 		if err := s.Store(d); err != nil {
@@ -100,13 +102,19 @@ func store(s Storer, data []Data) (int, error) {
 	return len(data), nil
 }
 
-// Copy knows how to pull and store data from any System.
+// 函数 - 入参是 PullStorer 自定义接口（包括两个接口）
 func Copy(ps PullStorer, batch int) error {
+	// 初始化切片
 	data := make([]Data, batch)
 
+	// 隔离一个上下文
 	for {
+		// PullStorer 同时实现了 Puller/Storer 接口，所以符合 pull 函数签名
+		// 调用 pull 函数
 		i, err := pull(ps, data)
 		if i > 0 {
+			// PullStorer 同时实现了 Puller/Storer  接口，所以符合 store 函数签名
+			// 然后调用 store 函数
 			if _, err := store(ps, data[:i]); err != nil {
 				return err
 			}
@@ -121,10 +129,18 @@ func Copy(ps PullStorer, batch int) error {
 // =============================================================================
 
 func main() {
+	// 声明 sys 类型的变量，并初始化所以字段
+	// 注意结尾的 , 不能省略
 
-	// Initialize the system for use.
+	// 隐含
+	// 由于 System 有 Puller 和 Storer 两个接口字段
+	// 所以 System 类型隐含实现了 PullStorer 接口
+
+	// GO 语言里面的一种思想：给类型挂载方法，就等于类型实现了对应的接口
 	sys := System{
+		// Xenia 实现了 Puller 接口
 		Puller: Xenia{},
+		// Pillar 实现了 Storer 接口
 		Storer: Pillar{},
 	}
 

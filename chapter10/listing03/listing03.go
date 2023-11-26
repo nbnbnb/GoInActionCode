@@ -18,13 +18,7 @@ type Data struct {
 	Line string
 }
 
-// 用户定义类型类型（同时实现两个接口）
-type PullStorer interface {
-	Puller
-	Storer
-}
-
-// 用户定义类型
+// 用户定义类型（这个地方与 04 不同，包含的是两个类型）
 type System struct {
 	Xenia
 	Pillar
@@ -46,6 +40,12 @@ type Puller interface {
 // 用户定义接口
 type Storer interface {
 	Store(d Data) error
+}
+
+// 用户定义接口类型（同时实现两个接口）
+type PullStorer interface {
+	Puller
+	Storer
 }
 
 // =============================================================================
@@ -100,7 +100,7 @@ func store(s Storer, data []Data) (int, error) {
 	return len(data), nil
 }
 
-// 函数 - 入参是 PullStorer 自定义类型（包括两个接口）
+// 函数 - 入参是 PullStorer 自定义接口（包括两个接口）
 func Copy(ps PullStorer, batch int) error {
 	// 初始化切片
 	data := make([]Data, batch)

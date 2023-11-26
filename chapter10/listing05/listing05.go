@@ -1,23 +1,22 @@
-// Sample program demonstrating when implicit interface conversions
-// are provided by the compiler.
+// 编译时隐式接口转换
 package main
 
 import "fmt"
 
 // =============================================================================
 
-// Mover provides support for moving things.
+// 用户定义接口类型
 type Mover interface {
 	Move()
 }
 
-// Locker provides support for locking and unlocking things.
+// 用户定义接口类型
 type Locker interface {
 	Lock()
 	Unlock()
 }
 
-// MoveLocker provides support for moving and locking things.
+// 用户定义接口类型（聚合两个接口）
 type MoveLocker interface {
 	Mover
 	Locker
@@ -25,56 +24,42 @@ type MoveLocker interface {
 
 // =============================================================================
 
-// bike represents a concrete type for the example.
+// 用户定义类型
 type bike struct{}
 
-// Move can change the position of a bike.
+// =============================================================================
+
+// 方法 - 给 bike 添加 Move 方法
 func (bike) Move() {
 	fmt.Println("Moving the bike")
 }
 
-// Lock prevents a bike from moving.
+// 方法 - 给 bike 添加 Lock 方法
 func (bike) Lock() {
 	fmt.Println("Locking the bike")
 }
 
-// Unlock allows a bike to be moved.
+// 方法 - 给 bike 添加 Lock 方法
 func (bike) Unlock() {
 	fmt.Println("Unlocking the bike")
 }
 
+// 注意：方法是一个一个添加的，根据添加的方法，决定实现了那些接口能力
+
 // =============================================================================
 
 func main() {
-	// Declare variables of the MoveLocker and Mover interfaces set to their
-	// zero value.
-	var ml MoveLocker
-	var m Mover
+	// 声明变量，nil 值
+	var moveLocker MoveLocker
+	var mover Mover
 
-	// Create a value of type bike and assign the value to the MoveLocker
-	// interface value.
-	ml = bike{}
+	// moveLocker 实现了 Mover/Locker/MoveLocker 接口
+	moveLocker = bike{}
 
-	// An interface value of type MoveLocker can be implicitly converted into
-	// a value of type Mover. They both declare a method named move.
-	m = ml
+	// 可以赋值成功
+	mover = moveLocker
 
-	// prog.go:65: cannot use m (type Mover) as type MoveLocker in assignment:
-	//	   Mover does not implement MoveLocker (missing Lock method)
-	// ml = m
-
-	// Interface type Mover does not declare methods named lock and unlock.
-	// Therefore, the compiler can't perform an implicit conversion to assign
-	// a value of interface type Mover to an interface value of type MoveLocker.
-	// It is irrelevant that the concrete type value of type bike that is stored
-	// inside of the Mover interface value implements the MoveLocker interface.
-
-	// We can perform a type assertion at runtime to support the assignment.
-
-	// Perform a type assertion against the Mover interface value to access
-	// a COPY of the concrete type value of type bike that was stored inside
-	// of it. Then assign the COPY of the concrete type to the MoveLocker
-	// interface.
-	b := m.(bike)
-	ml = b
+	// 构建的是一个 MoveLocker 对象
+	moveLockerAnother := mover.(bike)
+	moveLocker = moveLockerAnother
 }

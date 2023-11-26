@@ -12,13 +12,13 @@ type user struct {
 }
 
 // notify 方法的 “值接收者” 是 user
-func (u user) notify() {
-	fmt.Printf("Sending User Email To %s<%s>\n", u.name, u.email)
+func (user user) notify() {
+	fmt.Printf("Sending User Email To %s<%s>\n", user.name, user.email)
 }
 
 // changeEmail 方法的 “指针接收者” 是 *user
-func (u *user) changeEmail(email string) {
-	u.email = email
+func (user *user) changeEmail(email string) {
+	user.email = email
 }
 
 func main() {
@@ -28,15 +28,18 @@ func main() {
 	// 指针类型
 	pointer_type := &user{"Lisa", "lisa@email.com"}
 
+	// ***************************
+
 	// 值类型 -> 值接收者
-	// notify 方法，收到 value_type 值的一个副本
+	// notify 方法，收到 value_type 值的一个 “副本”
 	value_type.notify()
 
 	// 指针类型 -> 值接收者
-	// notify 方法，收到的是 pointer_type（指针）值的一个副本
+	// notify 方法，收到的是 pointer_type（指针）值的一个 ”副本“
 	// Go 编译器实际执行的是 (*pointer_type).notify()
-
 	pointer_type.notify()
+
+	// ***************************
 
 	// 值类型 -> 指针接收者
 	// Go 编译器实际执行的是 (&value_type).changeEmail("bill@newdomain")

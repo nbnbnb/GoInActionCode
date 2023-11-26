@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	// 创建一个 Buffer 对象，用零值初始化
 	var b bytes.Buffer
 
 	// 给 Buffer 中写入内容

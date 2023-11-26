@@ -11,7 +11,7 @@ import (
 // init 在 main 函数之前调用
 func init() {
 	if len(os.Args) != 2 {
-		os.Args = append(os.Args, "https://www.baidu.com")
+		os.Args = append(os.Args, "https://www.baidu.com/")
 	}
 }
 
@@ -24,6 +24,7 @@ func main() {
 		return
 	}
 
+	// 使用 io.Copy 方法
 	// 从 Body 复制到 Stdout
 	io.Copy(os.Stdout, res.Body)
 

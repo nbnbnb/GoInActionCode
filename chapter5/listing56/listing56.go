@@ -29,6 +29,8 @@ type admin struct {
 }
 
 func main() {
+	// 内部类型提升
+	// admin 也实现了 notifier 能力
 	admin := admin{
 		// 给嵌入类型赋值
 		user: user{
@@ -42,6 +44,9 @@ func main() {
 	// 这意味着由于内部类型的实现，外部类型也同样实现了这个接口
 
 	// 给 admin 用户发送一个通知用于实现接口的内部类型的方法，被提升到外部类型
+
+	// admin 也实现了 notifier 能力
+	admin.notify()
 
 	// 内部类型 user 实现了 notifier 接口
 	// 提升到外部类型 admin

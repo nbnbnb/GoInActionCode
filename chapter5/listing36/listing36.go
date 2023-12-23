@@ -5,12 +5,14 @@ import (
 	"fmt"
 )
 
+// interface 关键字
 // notifier 是一个定义了通知类行为的接口
 type notifier interface {
 	notify()
 }
 
-// user 在程序里定义一个用户类型
+// struct 关键字
+// user 是一个自定义类型
 type user struct {
 	name  string
 	email string
@@ -21,6 +23,7 @@ type user struct {
 
 // 原因：不是所有的类型都可以获得一个指针地址，例如常量和一些临时结果值
 
+// 实现接口
 // 此次使用的是 “指针接收者” 来实现接口
 func (u *user) notify() {
 	fmt.Printf("Sending user email to %s<%s>\n", u.name, u.email)
@@ -34,6 +37,7 @@ func main() {
 	sendNotification(&u)
 
 	// 传递 user 类型的 "值" 给 sendNotification 会引发一个编译错误
+	// 因为系统不确定这个值是否能转换成一个指针
 	// sendNotification(u)
 }
 

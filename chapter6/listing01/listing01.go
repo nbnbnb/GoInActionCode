@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"runtime"
 	"sync"
-	"time"
 )
 
 func main() {
@@ -35,9 +34,6 @@ func main() {
 		}
 	}()
 
-	// 暂停 1s
-	time.Sleep(time.Second)
-
 	// 与上面的 goroutine 一样
 	go func() {
 		defer wg.Done()
@@ -49,6 +45,7 @@ func main() {
 		}
 	}()
 
+	// 立马就会执行到这里，因为上面的 goroutine 是异步执行的
 	fmt.Println("Waiting To Finish")
 
 	// 等待 goroutine 结束：wg.Done 需要被调用两次

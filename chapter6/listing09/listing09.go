@@ -17,6 +17,10 @@ var (
 )
 
 func main() {
+	// 如果配置一个处理器，则每次都返回 1000
+	// 因为没有并发问题，最后的一个 go routine 赢得了竞争，赋值为 1000 给 counter
+	// runtime.GOMAXPROCS(1)
+
 	// 计数加 2，表示要等待两个 goroutine
 	wg.Add(2)
 

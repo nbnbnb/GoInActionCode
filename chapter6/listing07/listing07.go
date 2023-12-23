@@ -20,7 +20,6 @@ func main() {
 	go func() {
 		// 在函数退出时调用 Done 来通知 main 函数工作已经完成
 		defer wg.Done()
-
 		// 显示字母表 3 次
 		for count := 0; count < 3; count++ {
 			// 小写字母
@@ -41,6 +40,7 @@ func main() {
 		}
 	}()
 
+	// 立马就会执行到这里，因为上面的 goroutine 是异步执行的
 	fmt.Println("Waiting To Finish")
 
 	// 等待 goroutine 结束

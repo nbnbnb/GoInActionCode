@@ -42,8 +42,8 @@ next:
 				continue next
 			}
 		}
-		fmt.Printf("%s:%d\n", prefix, outer)
+		fmt.Printf("%s:%d ", prefix, outer)
 	}
 
-	fmt.Println("Completed", prefix)
+	fmt.Println("\nCompleted", prefix)
 }

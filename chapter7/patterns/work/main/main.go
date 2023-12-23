@@ -2,6 +2,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -46,7 +47,7 @@ func main() {
 		for _, name := range names {
 			// 创建一个 namePrinter 并提供指定的名字
 			np := namePrinter{
-				name: name,
+				name: fmt.Sprintf("%s --- %d", name, i),
 			}
 
 			go func() {

@@ -12,15 +12,15 @@ type Worker interface {
 // Pool 提供一个 goroutine 池， 这个池可以完成任何已提交的 Worker 任务
 type Pool struct {
 	// 一个通道
-	work chan Worker
-	wg   sync.WaitGroup
+	workChan chan Worker
+	wg       sync.WaitGroup
 }
 
 // New 创建一个新工作池
 func New(maxGoroutines int) *Pool {
 	pool := Pool{
 		// 初始化无缓冲通道
-		work: make(chan Worker),
+		workChan: make(chan Worker),
 	}
 
 	// 最多 maxGoroutines 个 goroutine 来完成这些任务
@@ -33,7 +33,7 @@ func New(maxGoroutines int) *Pool {
 
 			// 从通道中获取 work
 			// 注意：此处是用迭代器的方式
-			for work := range pool.work {
+			for work := range pool.workChan {
 				// 执行 Task 方法
 				work.Task()
 			}
@@ -50,13 +50,13 @@ func New(maxGoroutines int) *Pool {
 // Run 提交工作到工作池
 func (pool *Pool) Run(work Worker) {
 	// 将 work 发送到通道中
-	pool.work <- work
+	pool.workChan <- work
 }
 
 // Shutdown 等待所有 goroutine 停止工作
 func (pool *Pool) Shutdown() {
 	// 一定要调用关闭通道方法
-	close(pool.work)
+	close(pool.workChan)
 
 	// 等待所有的 goroutine 执行完毕
 	pool.wg.Wait()

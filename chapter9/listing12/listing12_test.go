@@ -49,6 +49,7 @@ func mockServer() *httptest.Server {
 func TestDownload(t *testing.T) {
 	statusCode := http.StatusOK
 
+	// 使用 mockServer
 	server := mockServer()
 	defer server.Close()
 
@@ -58,7 +59,12 @@ func TestDownload(t *testing.T) {
 		{
 			// http.Get 方法调用时并不知道我们的调用是否经过互联网
 			// 这个 URL 是 MockServer 提供的
+
 			resp, err := http.Get(server.URL)
+
+			// Mock Url http://127.0.0.1:55675
+			t.Logf("\t\t Mock Url %s", server.URL)
+
 			if err != nil {
 				t.Fatal("\t\tShould be able to make the Get call.", ballotX, err)
 			}
@@ -73,6 +79,7 @@ func TestDownload(t *testing.T) {
 
 			// 从响应体中解码 XML 文档
 			var d Document
+			// XML 反序列化
 			if err := xml.NewDecoder(resp.Body).Decode(&d); err != nil {
 				t.Fatal("\t\tShould be able to unmarshal the response.", ballotX, err)
 			}

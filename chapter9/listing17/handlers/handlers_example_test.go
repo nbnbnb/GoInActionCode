@@ -9,10 +9,17 @@ import (
 	"net/http/httptest"
 )
 
+// 为服务端点初始化路由
+func init() {
+	fmt.Println("init handlers_example_test")
+}
+
 // * 需要使用 Example 代替 Test 作为函数名的开始
 // * 示例代码的函数名字必须基于已经存在的公开的函数或者方法
 // 此处是基于 handlers 包里公开的 SendJSON 函数
 // ExampleSendJSON 提供了基础示例
+// 注意：命名规则
+// Example<PublicFunc>
 func ExampleSendJSON() {
 	r, _ := http.NewRequest("GET", "/sendjson", nil)
 	w := httptest.NewRecorder()

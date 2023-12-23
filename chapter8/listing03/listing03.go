@@ -18,7 +18,10 @@ func main() {
 
 	// Fatalln 在调用 Println() 之后会接着调用 os.Exit(1)
 	// 也就是一个异常终止
-	log.Fatalln("fatal message")
+
+	// 输出类似如下信息：
+	// Process 21172 has exited with status 1
+	// log.Fatalln("fatal message")
 
 	// Panicln 在调用 Println() 之后会接着调用 panic()
 	// Panic 系列函数用来写日志消息，然后触发一个 panic

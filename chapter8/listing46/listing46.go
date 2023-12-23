@@ -15,8 +15,8 @@ func main() {
 		os.Args = append(os.Args, "https://www.baidu.com", "baidu.log")
 	}
 
-	// 这里的 r 是一个响应， r.Body 是 io.Reader
-	r, err := http.Get(os.Args[1])
+	// 这里的 resp 是一个响应， resp.Body 是 io.Reader
+	resp, err := http.Get(os.Args[1])
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -33,8 +33,8 @@ func main() {
 	dest := io.MultiWriter(os.Stdout, file)
 
 	// 读出响应的内容，并写到两个目的地
-	io.Copy(dest, r.Body)
-	if err := r.Body.Close(); err != nil {
+	io.Copy(dest, resp.Body)
+	if err := resp.Body.Close(); err != nil {
 		log.Println(err)
 	}
 }

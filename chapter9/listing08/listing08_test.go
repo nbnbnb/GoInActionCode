@@ -1,4 +1,4 @@
-// 这个示例程序展示如何写一个基本的表组测试
+// 这个示例程序展示如何写一个基本的 ”表组“ 测试
 package listing08
 
 import (
@@ -29,6 +29,7 @@ func TestDownload(t *testing.T) {
 
 	t.Log("Given the need to test downloading different content.")
 	{
+		// 迭代 ”表组“
 		for _, u := range urls {
 			t.Logf("\tWhen checking \"%s\" for status code \"%d\"", u.url, u.statusCode)
 			{

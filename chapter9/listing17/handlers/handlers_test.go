@@ -7,6 +7,7 @@ package handlers_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -21,6 +22,8 @@ const (
 
 // 为服务端点初始化路由
 func init() {
+	fmt.Println("init handlers_test")
+	// 注册了 /sendjson 服务端点的路由
 	handlers.Routes()
 }
 
@@ -40,6 +43,7 @@ func TestSendJSON(t *testing.T) {
 
 		// 调用服务默认的多路选择器（mux）的 ServeHttp 方法
 		// 调用这个方法模仿了外部客户端对 /sendjson 服务端点的请求
+		// 将响应存储到了rw 中
 		http.DefaultServeMux.ServeHTTP(rw, req)
 
 		// 一旦 ServeHTTP 方法调用完成，http.ResponseRecorder 值就包含了 SendJSON 处理函数的响应

@@ -9,13 +9,13 @@ import (
 )
 
 type (
-	// gResult 映射到从搜索拿到的结果文档
+	// result 映射到从搜索拿到的结果文档
 
 	// 每个字段最后使用单引号声明了一个字符串
 	// 这些字符串被称作标签（ tag），是提供每个字段的元信息的一种机制，将 JSON 文档和结构类型里的字段一一映射起来
 	// 如果不存在标签，编码和解码过程会试图以大小写无关的方式，直接使用字段的名字进行匹配
 	// 如果无法匹配，对应的结构类型里的字段就包含其零值
-	gResult struct {
+	result struct {
 		GsearchResultClass string `json:"GsearchResultClass"`
 		UnescapedURL       string `json:"unescapedUrl"`
 		URL                string `json:"url"`
@@ -26,10 +26,14 @@ type (
 		Content            string `json:"content"`
 	}
 
-	// gResponse 包含顶级的文档
-	gResponse struct {
+	// response 包含顶级的文档
+	response struct {
+		// 必须得是大写字母开头
+		// 表示公共字段
 		ResponseData struct {
-			Results []gResult `json:"results"`
+			// 必须得是大写字母开头
+			// 表示公共字段
+			Results []result `json:"results"`
 		} `json:"responseData"`
 	}
 )
@@ -46,7 +50,7 @@ func main() {
 	defer resp.Body.Close()
 
 	// 将 JSON 响应解码到结构类型
-	var gr gResponse
+	var gr response
 	err = json.NewDecoder(resp.Body).Decode(&gr)
 	if err != nil {
 		log.Println("ERROR:", err)

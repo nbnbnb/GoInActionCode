@@ -3,8 +3,13 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
+
+func init() {
+	fmt.Println("init handlers")
+}
 
 // Routes 为网络服务设置路由
 func Routes() {

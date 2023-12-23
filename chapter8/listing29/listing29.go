@@ -1,4 +1,4 @@
-// 这个示例程序展示如何解码 JSON 字符串
+// 这个示例程序展示如何反序列化 JSON 字符串
 package main
 
 import (
@@ -7,8 +7,8 @@ import (
 	"log"
 )
 
-// JSON 包含要反序列化的样例字符串
-var JSON = `{
+// Info 包含要反序列化的样例字符串
+var Info = `{
 	"name": "Gopher",
 	"title": "programmer",
 	"contact": {
@@ -20,18 +20,18 @@ var JSON = `{
 func main() {
 	// 将 JSON 字符串反序列化到 map 变量
 
-	// 变量 c 声明为一个 map 类型，其键是 string 类型，其值是 interface{} 类型
-	var c map[string]interface{}
-	err := json.Unmarshal([]byte(JSON), &c)
+	// 变量 info 声明为一个 map 类型，其键是 string 类型，其值是 interface{} 类型
+	var info map[string]interface{}
+	err := json.Unmarshal([]byte(Info), &info)
 	if err != nil {
 		log.Println("ERROR:", err)
 		return
 	}
 
-	fmt.Println("Name:", c["name"])
-	fmt.Println("Title:", c["title"])
+	fmt.Println("Name:", info["name"])
+	fmt.Println("Title:", info["title"])
 	fmt.Println("Contact")
 	// 需要强制转换为 map[string]interface{} 类型
-	fmt.Println("H:", c["contact"].(map[string]interface{})["home"])
-	fmt.Println("C:", c["contact"].(map[string]interface{})["cell"])
+	fmt.Println("Home:", info["contact"].(map[string]interface{})["home"])
+	fmt.Println("Cell:", info["contact"].(map[string]interface{})["cell"])
 }

@@ -3,7 +3,7 @@
 // 然后使用 strconv.FormatInt 函数
 // 最后使用 strconv.Itoa
 
-// * 和单元测试文件一样，基准测试的文件名也必须以_test.go 结尾
+// * 和单元测试文件一样，基准测试的文件名也必须以 _test.go 结尾
 
 package listing05_test
 

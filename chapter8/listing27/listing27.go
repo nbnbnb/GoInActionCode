@@ -1,4 +1,4 @@
-// 这个示例程序展示如何解码 JSON 字符串
+// 这个示例程序展示如何反序列化 JSON 字符串
 package main
 
 import (
@@ -7,8 +7,10 @@ import (
 	"log"
 )
 
-// Contact 结构代表我们的 JSON 字符串
-type Contact struct {
+// Info 结构代表我们的 JSON 字符串
+type Info struct {
+	// 必须得是大写字母开头
+	// 表示公共字段
 	Name    string `json:"name"`
 	Title   string `json:"title"`
 	Contact struct {
@@ -29,12 +31,14 @@ var JSON = `{
 
 func main() {
 	// 将 JSON 字符串反序列化到变量
-	var c Contact
-	err := json.Unmarshal([]byte(JSON), &c)
+	var info Info
+
+	// 将字符串反序列化到变量
+	err := json.Unmarshal([]byte(JSON), &info)
 	if err != nil {
 		log.Println("ERROR:", err)
 		return
 	}
 
-	fmt.Println(c)
+	fmt.Println(info)
 }
